@@ -2,15 +2,29 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardFooter,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
-const LoginForm: React.FC = () => {
+export default function LoginForm() {
 	const [userKey, setUserKey] = useState("");
 	const [error, setError] = useState<string | null>(null);
+	const [isLoading, setIsLoading] = useState(false);
 	const router = useRouter();
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
 		setError(null);
+		setIsLoading(true);
 
 		try {
 			const res = await fetch(`/api/users/verify`, {
@@ -24,44 +38,51 @@ const LoginForm: React.FC = () => {
 			}
 
 			const data = await res.json();
-			// Redirect to the survey page with userKey as a query parameter
 			router.push(`/survey?key=${data.userKey}`);
 		} catch (err) {
 			setError((err as Error).message);
+		} finally {
+			setIsLoading(false);
 		}
 	};
 
 	return (
-		<form
-			onSubmit={handleSubmit}
-			className="w-full max-w-md p-6 bg-card rounded shadow"
-		>
-			<h2 className="text-2xl font-bold mb-4">Login with Your Key</h2>
-
-			{error && <p className="text-red-500 mb-4">{error}</p>}
-
-			<div className="mb-4">
-				<label htmlFor="userKey" className="block mb-2">
-					User Key
-				</label>
-				<input
-					type="text"
-					id="userKey"
-					value={userKey}
-					onChange={(e) => setUserKey(e.target.value)}
-					required
-					className="w-full px-3 py-2 border rounded"
-				/>
-			</div>
-
-			<button
-				type="submit"
-				className="w-full px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-			>
-				Login
-			</button>
-		</form>
+		<Card className="w-full max-w-md">
+			<CardHeader>
+				<CardTitle>Login</CardTitle>
+				<CardDescription>
+					Enter your user key to access the survey
+				</CardDescription>
+			</CardHeader>
+			<form onSubmit={handleSubmit}>
+				<CardContent className="space-y-4">
+					{error && (
+						<Alert variant="destructive">
+							<AlertDescription>{error}</AlertDescription>
+						</Alert>
+					)}
+					<div className="space-y-2">
+						<Label htmlFor="userKey">User Key</Label>
+						<Input
+							type="text"
+							id="userKey"
+							value={userKey}
+							onChange={(e) => setUserKey(e.target.value)}
+							required
+							placeholder="Enter your user key"
+						/>
+					</div>
+				</CardContent>
+				<CardFooter>
+					<Button
+						type="submit"
+						className="w-full"
+						disabled={isLoading}
+					>
+						{isLoading ? "Logging in..." : "Login"}
+					</Button>
+				</CardFooter>
+			</form>
+		</Card>
 	);
-};
-
-export default LoginForm;
+}

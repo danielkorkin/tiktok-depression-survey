@@ -2,12 +2,25 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardFooter,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import Link from "next/link";
 
-const EligibilityForm: React.FC = () => {
-	const [usesTikTok, setUsesTikTok] = useState<boolean | null>(null);
-	const [isEnglish, setIsEnglish] = useState<boolean | null>(null);
-	const [isOver13, setIsOver13] = useState<boolean | null>(null);
-	const [isOver18, setIsOver18] = useState<boolean | null>(null);
+export default function EligibilityForm() {
+	const [usesTikTok, setUsesTikTok] = useState<string | null>(null);
+	const [isEnglish, setIsEnglish] = useState<string | null>(null);
+	const [isOver13, setIsOver13] = useState<string | null>(null);
+	const [isOver18, setIsOver18] = useState<string | null>(null);
 	const [error, setError] = useState<string | null>(null);
 	const [userKey, setUserKey] = useState<string | null>(null);
 	const router = useRouter();
@@ -21,7 +34,11 @@ const EligibilityForm: React.FC = () => {
 		setError(null);
 
 		// Validate required fields
-		if (usesTikTok !== true || isEnglish !== true || isOver13 !== true) {
+		if (
+			usesTikTok !== "true" ||
+			isEnglish !== "true" ||
+			isOver13 !== "true"
+		) {
 			setError("You are not eligible to participate.");
 			return;
 		}
@@ -36,10 +53,10 @@ const EligibilityForm: React.FC = () => {
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({
 					userKey: key,
-					usesTikTok,
-					isEnglish,
-					isOver13,
-					isOver18,
+					usesTikTok: usesTikTok === "true",
+					isEnglish: isEnglish === "true",
+					isOver13: isOver13 === "true",
+					isOver18: isOver18 === "true",
 				}),
 			});
 
@@ -56,167 +73,130 @@ const EligibilityForm: React.FC = () => {
 
 	if (userKey) {
 		return (
-			<div className="max-w-md p-6 bg-card rounded shadow">
-				<h2 className="text-2xl font-bold mb-4">Eligibility Passed</h2>
-				<p>Your participation key:</p>
-				<div className="mt-2 p-2 bg-gray-100 text-center font-mono">
-					{userKey}
-				</div>
-				<p className="mt-4">
-					Please save this key and use it to{" "}
-					<a href="/login" className="text-blue-500 underline">
-						log in
-					</a>{" "}
-					to complete the survey.
-				</p>
-			</div>
+			<Card className="w-full max-w-md">
+				<CardHeader>
+					<CardTitle>Eligibility Passed</CardTitle>
+					<CardDescription>
+						Your participation key has been generated
+					</CardDescription>
+				</CardHeader>
+				<CardContent>
+					<p>Your participation key:</p>
+					<div className="mt-2 p-2 bg-muted text-center font-mono rounded">
+						{userKey}
+					</div>
+				</CardContent>
+				<CardFooter>
+					<p>
+						Please save this key and use it to{" "}
+						<Link
+							href="/login"
+							className="text-primary hover:underline"
+						>
+							log in
+						</Link>{" "}
+						to complete the survey.
+					</p>
+				</CardFooter>
+			</Card>
 		);
 	}
 
 	return (
-		<form
-			onSubmit={handleSubmit}
-			className="w-full max-w-md p-6 bg-card rounded shadow"
-		>
-			<h2 className="text-2xl font-bold mb-4">Eligibility Survey</h2>
+		<Card className="w-full max-w-md">
+			<CardHeader>
+				<CardTitle>Eligibility Survey</CardTitle>
+				<CardDescription>
+					Please answer the following questions to determine your
+					eligibility.
+				</CardDescription>
+			</CardHeader>
+			<form onSubmit={handleSubmit}>
+				<CardContent className="space-y-6">
+					{error && (
+						<Alert variant="destructive">
+							<AlertDescription>{error}</AlertDescription>
+						</Alert>
+					)}
 
-			{error && <p className="text-red-500 mb-4">{error}</p>}
+					<div className="space-y-2">
+						<Label>Do you use TikTok? *</Label>
+						<RadioGroup
+							value={usesTikTok || ""}
+							onValueChange={setUsesTikTok}
+						>
+							<div className="flex items-center space-x-2">
+								<RadioGroupItem value="true" id="tiktokYes" />
+								<Label htmlFor="tiktokYes">Yes</Label>
+							</div>
+							<div className="flex items-center space-x-2">
+								<RadioGroupItem value="false" id="tiktokNo" />
+								<Label htmlFor="tiktokNo">No</Label>
+							</div>
+						</RadioGroup>
+					</div>
 
-			<div className="mb-4">
-				<label className="block mb-2">Do you use TikTok? *</label>
-				<div className="flex items-center">
-					<input
-						type="radio"
-						id="tiktokYes"
-						name="usesTikTok"
-						value="yes"
-						checked={usesTikTok === true}
-						onChange={() => setUsesTikTok(true)}
-						required
-						className="mr-2"
-					/>
-					<label htmlFor="tiktokYes" className="mr-4">
-						Yes
-					</label>
+					<div className="space-y-2">
+						<Label>Is your page mostly in English? *</Label>
+						<RadioGroup
+							value={isEnglish || ""}
+							onValueChange={setIsEnglish}
+						>
+							<div className="flex items-center space-x-2">
+								<RadioGroupItem value="true" id="englishYes" />
+								<Label htmlFor="englishYes">Yes</Label>
+							</div>
+							<div className="flex items-center space-x-2">
+								<RadioGroupItem value="false" id="englishNo" />
+								<Label htmlFor="englishNo">No</Label>
+							</div>
+						</RadioGroup>
+					</div>
 
-					<input
-						type="radio"
-						id="tiktokNo"
-						name="usesTikTok"
-						value="no"
-						checked={usesTikTok === false}
-						onChange={() => setUsesTikTok(false)}
-						className="mr-2"
-					/>
-					<label htmlFor="tiktokNo">No</label>
-				</div>
-			</div>
+					<div className="space-y-2">
+						<Label>Are you over 13 years old? *</Label>
+						<RadioGroup
+							value={isOver13 || ""}
+							onValueChange={setIsOver13}
+						>
+							<div className="flex items-center space-x-2">
+								<RadioGroupItem value="true" id="over13Yes" />
+								<Label htmlFor="over13Yes">Yes</Label>
+							</div>
+							<div className="flex items-center space-x-2">
+								<RadioGroupItem value="false" id="over13No" />
+								<Label htmlFor="over13No">No</Label>
+							</div>
+						</RadioGroup>
+					</div>
 
-			<div className="mb-4">
-				<label className="block mb-2">
-					Is your page mostly in English? *
-				</label>
-				<div className="flex items-center">
-					<input
-						type="radio"
-						id="englishYes"
-						name="isEnglish"
-						value="yes"
-						checked={isEnglish === true}
-						onChange={() => setIsEnglish(true)}
-						required
-						className="mr-2"
-					/>
-					<label htmlFor="englishYes" className="mr-4">
-						Yes
-					</label>
-
-					<input
-						type="radio"
-						id="englishNo"
-						name="isEnglish"
-						value="no"
-						checked={isEnglish === false}
-						onChange={() => setIsEnglish(false)}
-						className="mr-2"
-					/>
-					<label htmlFor="englishNo">No</label>
-				</div>
-			</div>
-
-			<div className="mb-4">
-				<label className="block mb-2">
-					Are you over 13 years old? *
-				</label>
-				<div className="flex items-center">
-					<input
-						type="radio"
-						id="over13Yes"
-						name="isOver13"
-						value="yes"
-						checked={isOver13 === true}
-						onChange={() => setIsOver13(true)}
-						required
-						className="mr-2"
-					/>
-					<label htmlFor="over13Yes" className="mr-4">
-						Yes
-					</label>
-
-					<input
-						type="radio"
-						id="over13No"
-						name="isOver13"
-						value="no"
-						checked={isOver13 === false}
-						onChange={() => setIsOver13(false)}
-						className="mr-2"
-					/>
-					<label htmlFor="over13No">No</label>
-				</div>
-			</div>
-
-			<div className="mb-6">
-				<label className="block mb-2">Are you over 18 years old?</label>
-				<div className="flex items-center">
-					<input
-						type="radio"
-						id="over18Yes"
-						name="isOver18"
-						value="yes"
-						checked={isOver18 === true}
-						onChange={() => setIsOver18(true)}
-						className="mr-2"
-					/>
-					<label htmlFor="over18Yes" className="mr-4">
-						Yes
-					</label>
-
-					<input
-						type="radio"
-						id="over18No"
-						name="isOver18"
-						value="no"
-						checked={isOver18 === false}
-						onChange={() => setIsOver18(false)}
-						className="mr-2"
-					/>
-					<label htmlFor="over18No">No</label>
-				</div>
-				<p className="text-sm text-gray-500 mt-1">
-					If you are under 18, you need approval from your parents to
-					participate.
-				</p>
-			</div>
-
-			<button
-				type="submit"
-				className="w-full px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
-			>
-				Submit
-			</button>
-		</form>
+					<div className="space-y-2">
+						<Label>Are you over 18 years old?</Label>
+						<RadioGroup
+							value={isOver18 || ""}
+							onValueChange={setIsOver18}
+						>
+							<div className="flex items-center space-x-2">
+								<RadioGroupItem value="true" id="over18Yes" />
+								<Label htmlFor="over18Yes">Yes</Label>
+							</div>
+							<div className="flex items-center space-x-2">
+								<RadioGroupItem value="false" id="over18No" />
+								<Label htmlFor="over18No">No</Label>
+							</div>
+						</RadioGroup>
+						<p className="text-sm text-muted-foreground">
+							If you are under 18, you need approval from your
+							parents to participate.
+						</p>
+					</div>
+				</CardContent>
+				<CardFooter>
+					<Button type="submit" className="w-full">
+						Submit
+					</Button>
+				</CardFooter>
+			</form>
+		</Card>
 	);
-};
-
-export default EligibilityForm;
+}

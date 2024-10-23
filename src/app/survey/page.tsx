@@ -1,7 +1,28 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardFooter,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Loader2 } from "lucide-react";
 
 const PHQ9Questions = [
 	"Little interest or pleasure in doing things",
@@ -21,7 +42,7 @@ interface UserData {
 	isOver18: boolean | null;
 }
 
-const SurveyPage: React.FC = () => {
+export default function SurveyPage() {
 	const searchParams = useSearchParams();
 	const router = useRouter();
 	const userKey = searchParams.get("key");
@@ -37,7 +58,6 @@ const SurveyPage: React.FC = () => {
 	const [success, setSuccess] = useState<string | null>(null);
 	const [submitting, setSubmitting] = useState<boolean>(false);
 
-	// Fetch user data based on userKey
 	useEffect(() => {
 		if (!userKey) {
 			router.push("/login");
@@ -65,14 +85,12 @@ const SurveyPage: React.FC = () => {
 		fetchUser();
 	}, [userKey, router]);
 
-	// Handle changes in PHQ-9 questions
-	const handlePHQ9Change = (index: number, value: number) => {
+	const handlePHQ9Change = (index: number, value: string) => {
 		const updatedPHQ9 = [...phq9];
-		updatedPHQ9[index] = value;
+		updatedPHQ9[index] = parseInt(value);
 		setPhq9(updatedPHQ9);
 	};
 
-	// Handle form submission
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
 		setError(null);
@@ -102,7 +120,6 @@ const SurveyPage: React.FC = () => {
 
 		setSubmitting(true);
 
-		// Read TikTok data as JSON
 		let tiktokJson: any;
 		try {
 			const fileContent = await tiktokData.text();
@@ -113,7 +130,6 @@ const SurveyPage: React.FC = () => {
 			return;
 		}
 
-		// Calculate PHQ-9 score
 		const phq9Score = phq9.reduce((total, current) => total + current, 0);
 
 		try {
@@ -127,7 +143,7 @@ const SurveyPage: React.FC = () => {
 					phq9Score,
 					tiktokData: tiktokJson,
 					agreedTerms,
-					agreedExtra: user.isOver18 ? null : agreedExtra,
+					agreedExtra: user?.isOver18 ? null : agreedExtra,
 				}),
 			});
 
@@ -139,9 +155,6 @@ const SurveyPage: React.FC = () => {
 			setSuccess(
 				"Survey submitted successfully. Thank you for your participation!"
 			);
-			// Optionally, redirect or reset form here
-			// For example, redirect to a thank you page:
-			// router.push("/thank-you");
 		} catch (err) {
 			setError((err as Error).message);
 		} finally {
@@ -151,133 +164,147 @@ const SurveyPage: React.FC = () => {
 
 	if (loading) {
 		return (
-			<div className="flex items-center justify-center min-h-screen bg-background text-foreground">
-				<p>Loading...</p>
+			<div className="flex items-center justify-center min-h-screen">
+				<Loader2 className="h-8 w-8 animate-spin" />
 			</div>
 		);
 	}
 
 	if (error) {
 		return (
-			<div className="flex items-center justify-center min-h-screen bg-background text-foreground">
-				<p className="text-red-500">{error}</p>
+			<div className="flex items-center justify-center min-h-screen">
+				<Alert variant="destructive">
+					<AlertTitle>Error</AlertTitle>
+					<AlertDescription>{error}</AlertDescription>
+				</Alert>
 			</div>
 		);
 	}
 
 	return (
-		<div className="flex items-center justify-center min-h-screen bg-background text-foreground px-4">
-			<form
-				onSubmit={handleSubmit}
-				className="w-full max-w-2xl p-6 bg-card rounded shadow"
-			>
-				<h2 className="text-2xl font-bold mb-6">PHQ-9 Survey</h2>
+		<div className="container mx-auto py-10">
+			<Card className="w-full max-w-2xl mx-auto">
+				<CardHeader>
+					<CardTitle>PHQ-9 Survey</CardTitle>
+					<CardDescription>
+						Please answer the following questions about your mental
+						health.
+					</CardDescription>
+				</CardHeader>
+				<form onSubmit={handleSubmit}>
+					<CardContent className="space-y-6">
+						{success && (
+							<Alert>
+								<AlertTitle>Success</AlertTitle>
+								<AlertDescription>{success}</AlertDescription>
+							</Alert>
+						)}
+						{error && (
+							<Alert variant="destructive">
+								<AlertTitle>Error</AlertTitle>
+								<AlertDescription>{error}</AlertDescription>
+							</Alert>
+						)}
 
-				{success && <p className="text-green-500 mb-4">{success}</p>}
-				{error && <p className="text-red-500 mb-4">{error}</p>}
+						{PHQ9Questions.map((question, index) => (
+							<div key={index} className="space-y-2">
+								<Label htmlFor={`phq9-${index}`}>{`${
+									index + 1
+								}. ${question}`}</Label>
+								<Select
+									onValueChange={(value) =>
+										handlePHQ9Change(index, value)
+									}
+									value={phq9[index].toString()}
+								>
+									<SelectTrigger id={`phq9-${index}`}>
+										<SelectValue placeholder="Select an option" />
+									</SelectTrigger>
+									<SelectContent>
+										<SelectItem value="0">
+											Not at all
+										</SelectItem>
+										<SelectItem value="1">
+											Several days
+										</SelectItem>
+										<SelectItem value="2">
+											More than half the days
+										</SelectItem>
+										<SelectItem value="3">
+											Nearly every day
+										</SelectItem>
+									</SelectContent>
+								</Select>
+							</div>
+						))}
 
-				{/* PHQ-9 Questions */}
-				<div className="mb-6">
-					<h3 className="text-xl font-semibold mb-4">
-						Please answer the following questions:
-					</h3>
-					{PHQ9Questions.map((question, index) => (
-						<div key={index} className="mb-4">
-							<label className="block mb-2">
-								{`${index + 1}. ${question}`}
-							</label>
-							<select
-								value={phq9[index]}
-								onChange={(e) =>
-									handlePHQ9Change(
-										index,
-										parseInt(e.target.value)
-									)
-								}
+						<div className="space-y-2">
+							<Label htmlFor="tiktokData">
+								Upload TikTok Data (JSON) *
+							</Label>
+							<Input
+								id="tiktokData"
+								type="file"
+								accept=".json"
+								onChange={(e) => {
+									if (e.target.files && e.target.files[0]) {
+										setTiktokData(e.target.files[0]);
+									}
+								}}
 								required
-								className="w-full px-3 py-2 border rounded"
-							>
-								<option value={0}>Not at all</option>
-								<option value={1}>Several days</option>
-								<option value={2}>
-									More than half the days
-								</option>
-								<option value={3}>Nearly every day</option>
-							</select>
-						</div>
-					))}
-				</div>
-
-				{/* TikTok Data Upload */}
-				<div className="mb-6">
-					<label htmlFor="tiktokData" className="block mb-2">
-						Upload TikTok Data (JSON) *
-					</label>
-					<input
-						type="file"
-						id="tiktokData"
-						accept=".json"
-						onChange={(e) => {
-							if (e.target.files && e.target.files[0]) {
-								setTiktokData(e.target.files[0]);
-							}
-						}}
-						required
-						className="w-full"
-					/>
-				</div>
-
-				{/* Terms and Conditions */}
-				<div className="mb-4">
-					<label className="flex items-center">
-						<input
-							type="checkbox"
-							checked={agreedTerms}
-							onChange={(e) => setAgreedTerms(e.target.checked)}
-							required
-							className="mr-2"
-						/>
-						I agree to the{" "}
-						<a href="/terms" className="text-blue-500 underline">
-							terms and conditions
-						</a>
-						.
-					</label>
-				</div>
-
-				{/* Additional Terms for Users Under 18 */}
-				{user?.isOver18 === false && (
-					<div className="mb-6">
-						<label className="flex items-center">
-							<input
-								type="checkbox"
-								checked={agreedExtra}
-								onChange={(e) =>
-									setAgreedExtra(e.target.checked)
-								}
-								required
-								className="mr-2"
 							/>
-							I agree to the additional terms for users under 18,
-							including parental approval.
-						</label>
-					</div>
-				)}
+						</div>
 
-				<button
-					type="submit"
-					disabled={submitting}
-					className={`w-full px-4 py-2 rounded ${
-						submitting
-							? "bg-gray-400 cursor-not-allowed"
-							: "bg-green-600 hover:bg-green-700"
-					} text-white font-semibold`}
-				>
-					{submitting ? "Submitting..." : "Submit"}
-				</button>
-			</form>
+						<div className="flex items-center space-x-2">
+							<Checkbox
+								id="terms"
+								checked={agreedTerms}
+								onCheckedChange={(checked) =>
+									setAgreedTerms(checked as boolean)
+								}
+							/>
+							<Label htmlFor="terms">
+								I agree to the{" "}
+								<a
+									href="/terms"
+									className="text-primary hover:underline"
+								>
+									terms and conditions
+								</a>
+								.
+							</Label>
+						</div>
+
+						{user?.isOver18 === false && (
+							<div className="flex items-center space-x-2">
+								<Checkbox
+									id="extraTerms"
+									checked={agreedExtra}
+									onCheckedChange={(checked) =>
+										setAgreedExtra(checked as boolean)
+									}
+								/>
+								<Label htmlFor="extraTerms">
+									I agree to the additional terms for users
+									under 18, including parental approval.
+								</Label>
+							</div>
+						)}
+					</CardContent>
+					<CardFooter>
+						<Button
+							type="submit"
+							disabled={submitting}
+							className="w-full"
+						>
+							{submitting ? (
+								<Loader2 className="mr-2 h-4 w-4 animate-spin" />
+							) : null}
+							{submitting ? "Submitting..." : "Submit"}
+						</Button>
+					</CardFooter>
+				</form>
+			</Card>
 		</div>
 	);
-};
-
-export default SurveyPage;
+}
