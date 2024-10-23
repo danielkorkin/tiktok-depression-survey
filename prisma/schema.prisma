@@ -12,3 +12,25 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model User {
+  id         Int      @id @default(autoincrement())
+  userKey    String   @unique
+  usesTikTok Boolean
+  isEnglish  Boolean
+  isOver13   Boolean
+  isOver18   Boolean?
+  createdAt  DateTime @default(now())
+  survey     Survey?
+}
+
+model Survey {
+  id          Int      @id @default(autoincrement())
+  phq9Score   Int
+  tiktokData  Json
+  agreedTerms Boolean
+  agreedExtra Boolean?
+  user        User     @relation(fields: [userId], references: [id])
+  userId      Int      @unique
+  submittedAt DateTime @default(now())
+}
