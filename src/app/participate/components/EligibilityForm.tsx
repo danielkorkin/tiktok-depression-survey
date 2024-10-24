@@ -14,39 +14,80 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Calendar } from "@/components/ui/calendar";
+import {
+	Popover,
+	PopoverContent,
+	PopoverTrigger,
+} from "@/components/ui/popover";
+import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
+import { format, parse, isValid } from "date-fns";
+import { CalendarIcon } from "lucide-react";
 import Link from "next/link";
 
 export default function EligibilityForm() {
 	const [usesTikTok, setUsesTikTok] = useState<string | null>(null);
 	const [isEnglish, setIsEnglish] = useState<string | null>(null);
-	const [isOver13, setIsOver13] = useState<string | null>(null);
-	const [isOver18, setIsOver18] = useState<string | null>(null);
+	const [dateOfBirth, setDateOfBirth] = useState<Date | undefined>();
+	const [dateInputValue, setDateInputValue] = useState("");
 	const [error, setError] = useState<string | null>(null);
 	const [userKey, setUserKey] = useState<string | null>(null);
 	const router = useRouter();
 
+	const calculateAge = (dob: Date): number => {
+		const today = new Date();
+		let age = today.getFullYear() - dob.getFullYear();
+		const monthDiff = today.getMonth() - dob.getMonth();
+		if (
+			monthDiff < 0 ||
+			(monthDiff === 0 && today.getDate() < dob.getDate())
+		) {
+			age--;
+		}
+		return age;
+	};
+
 	const generateUserKey = (): string => {
 		return Math.random().toString(36).substr(2, 9).toUpperCase();
+	};
+
+	const handleDateInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		const value = e.target.value;
+		setDateInputValue(value);
+		const parsedDate = parse(value, "MM/dd/yyyy", new Date());
+		if (isValid(parsedDate)) {
+			setDateOfBirth(parsedDate);
+		}
+	};
+
+	const handleCalendarSelect = (date: Date | undefined) => {
+		setDateOfBirth(date);
+		if (date) {
+			setDateInputValue(format(date, "MM/dd/yyyy"));
+		}
 	};
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
 		setError(null);
 
-		// Validate required fields
-		if (
-			usesTikTok !== "true" ||
-			isEnglish !== "true" ||
-			isOver13 !== "true"
-		) {
+		if (usesTikTok !== "true" || isEnglish !== "true" || !dateOfBirth) {
 			setError("You are not eligible to participate.");
 			return;
 		}
 
-		// Generate user key
+		const age = calculateAge(dateOfBirth);
+		const isOver13 = age >= 13;
+		const isOver18 = age >= 18;
+
+		if (!isOver13) {
+			setError("You must be at least 13 years old to participate.");
+			return;
+		}
+
 		const key = generateUserKey();
 
-		// Save user to the database
 		try {
 			const res = await fetch("/api/users", {
 				method: "POST",
@@ -55,8 +96,8 @@ export default function EligibilityForm() {
 					userKey: key,
 					usesTikTok: usesTikTok === "true",
 					isEnglish: isEnglish === "true",
-					isOver13: isOver13 === "true",
-					isOver18: isOver18 === "true",
+					isOver13,
+					isOver18,
 				}),
 			});
 
@@ -154,41 +195,40 @@ export default function EligibilityForm() {
 					</div>
 
 					<div className="space-y-2">
-						<Label>Are you over 13 years old? *</Label>
-						<RadioGroup
-							value={isOver13 || ""}
-							onValueChange={setIsOver13}
-						>
-							<div className="flex items-center space-x-2">
-								<RadioGroupItem value="true" id="over13Yes" />
-								<Label htmlFor="over13Yes">Yes</Label>
-							</div>
-							<div className="flex items-center space-x-2">
-								<RadioGroupItem value="false" id="over13No" />
-								<Label htmlFor="over13No">No</Label>
-							</div>
-						</RadioGroup>
-					</div>
-
-					<div className="space-y-2">
-						<Label>Are you over 18 years old?</Label>
-						<RadioGroup
-							value={isOver18 || ""}
-							onValueChange={setIsOver18}
-						>
-							<div className="flex items-center space-x-2">
-								<RadioGroupItem value="true" id="over18Yes" />
-								<Label htmlFor="over18Yes">Yes</Label>
-							</div>
-							<div className="flex items-center space-x-2">
-								<RadioGroupItem value="false" id="over18No" />
-								<Label htmlFor="over18No">No</Label>
-							</div>
-						</RadioGroup>
-						<p className="text-sm text-muted-foreground">
-							If you are under 18, you need approval from your
-							parents to participate.
-						</p>
+						<Label htmlFor="dob">
+							Date of Birth (MM/DD/YYYY) *
+						</Label>
+						<div className="flex space-x-2">
+							<Input
+								id="dob"
+								value={dateInputValue}
+								onChange={handleDateInputChange}
+								placeholder="MM/DD/YYYY"
+								className="w-full"
+							/>
+							<Popover>
+								<PopoverTrigger asChild>
+									<Button variant="outline" size="icon">
+										<CalendarIcon className="h-4 w-4" />
+									</Button>
+								</PopoverTrigger>
+								<PopoverContent
+									className="w-auto p-0"
+									align="end"
+								>
+									<Calendar
+										mode="single"
+										selected={dateOfBirth}
+										onSelect={handleCalendarSelect}
+										disabled={(date) =>
+											date > new Date() ||
+											date < new Date("1900-01-01")
+										}
+										initialFocus
+									/>
+								</PopoverContent>
+							</Popover>
+						</div>
 					</div>
 				</CardContent>
 				<CardFooter>
