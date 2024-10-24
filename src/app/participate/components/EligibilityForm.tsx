@@ -23,7 +23,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { format, parse, isValid } from "date-fns";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, Copy, Check } from "lucide-react";
 import Link from "next/link";
 
 export default function EligibilityForm() {
@@ -33,6 +33,7 @@ export default function EligibilityForm() {
 	const [dateInputValue, setDateInputValue] = useState("");
 	const [error, setError] = useState<string | null>(null);
 	const [userKey, setUserKey] = useState<string | null>(null);
+	const [copied, setCopied] = useState(false);
 	const router = useRouter();
 
 	const calculateAge = (dob: Date): number => {
@@ -112,6 +113,14 @@ export default function EligibilityForm() {
 		}
 	};
 
+	const copyToClipboard = () => {
+		if (userKey) {
+			navigator.clipboard.writeText(userKey);
+			setCopied(true);
+			setTimeout(() => setCopied(false), 2000);
+		}
+	};
+
 	if (userKey) {
 		return (
 			<Card className="w-full max-w-md">
@@ -123,21 +132,29 @@ export default function EligibilityForm() {
 				</CardHeader>
 				<CardContent>
 					<p>Your participation key:</p>
-					<div className="mt-2 p-2 bg-muted text-center font-mono rounded">
-						{userKey}
+					<div className="mt-2 p-2 bg-muted text-center font-mono rounded flex justify-between items-center">
+						<span>{userKey}</span>
+						<Button
+							variant="ghost"
+							size="sm"
+							onClick={copyToClipboard}
+						>
+							{copied ? (
+								<Check className="h-4 w-4" />
+							) : (
+								<Copy className="h-4 w-4" />
+							)}
+						</Button>
 					</div>
 				</CardContent>
-				<CardFooter>
-					<p>
-						Please save this key and use it to{" "}
-						<Link
-							href="/login"
-							className="text-primary hover:underline"
-						>
-							log in
-						</Link>{" "}
-						to complete the survey.
+				<CardFooter className="flex flex-col items-center space-y-2">
+					<p className="text-center">
+						Please save this key. You will need it to complete the
+						survey.
 					</p>
+					<Button asChild className="w-full">
+						<Link href="/login">Continue to Login</Link>
+					</Button>
 				</CardFooter>
 			</Card>
 		);
