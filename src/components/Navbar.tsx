@@ -21,22 +21,10 @@ export default function Navbar() {
 						</Link>
 						<div className="hidden sm:ml-6 sm:flex sm:space-x-8">
 							<Link
-								href="/about"
+								href="/guides"
 								className="inline-flex items-center px-1 pt-1 text-sm font-medium"
 							>
-								About
-							</Link>
-							<Link
-								href="/faq"
-								className="inline-flex items-center px-1 pt-1 text-sm font-medium"
-							>
-								FAQ
-							</Link>
-							<Link
-								href="/why"
-								className="inline-flex items-center px-1 pt-1 text-sm font-medium"
-							>
-								Why Participate
+								Guides
 							</Link>
 						</div>
 					</div>

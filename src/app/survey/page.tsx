@@ -142,7 +142,7 @@ export default function SurveyPage() {
 			}
 
 			// Redirect to the thank you page after successful submission
-			router.push("/thank-you");
+			router.push("/");
 		} catch (err) {
 			setError((err as Error).message);
 		} finally {
