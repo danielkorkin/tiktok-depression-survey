@@ -27,7 +27,7 @@ model User {
 model Survey {
   id          Int      @id @default(autoincrement())
   phq9Score   Int
-  tiktokData  Json
+  videoList   Json // Newly added field to store VideoList
   agreedTerms Boolean
   agreedExtra Boolean?
   user        User     @relation(fields: [userId], references: [id])

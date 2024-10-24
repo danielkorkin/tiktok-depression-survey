@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-@import '../../node_modules/prismjs/themes/prism-tomorrow.css';
+@import "../../node_modules/prismjs/themes/prism-tomorrow.css";
 
 @layer base {
 	:root {

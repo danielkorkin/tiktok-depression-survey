@@ -1,3 +1,5 @@
+// src/app/survey/page.tsx
+
 "use client";
 
 import { useState, useEffect } from "react";
@@ -52,7 +54,7 @@ export default function SurveyPage() {
 	const [error, setError] = useState<string | null>(null);
 
 	const [phq9, setPhq9] = useState<number[]>(Array(9).fill(0));
-	const [tiktokData, setTiktokData] = useState<File | null>(null);
+	const [videoList, setVideoList] = useState<any[] | null>(null); // Updated state to store VideoList
 	const [agreedTerms, setAgreedTerms] = useState<boolean>(false);
 	const [agreedExtra, setAgreedExtra] = useState<boolean>(false);
 	const [success, setSuccess] = useState<string | null>(null);
@@ -101,8 +103,8 @@ export default function SurveyPage() {
 			return;
 		}
 
-		if (!tiktokData) {
-			setError("Please upload your TikTok data (JSON file).");
+		if (!videoList) {
+			setError("Please upload your TikTok VideoList JSON file.");
 			return;
 		}
 
@@ -120,16 +122,6 @@ export default function SurveyPage() {
 
 		setSubmitting(true);
 
-		let tiktokJson: any;
-		try {
-			const fileContent = await tiktokData.text();
-			tiktokJson = JSON.parse(fileContent);
-		} catch (err) {
-			setError("Invalid TikTok data. Please upload a valid JSON file.");
-			setSubmitting(false);
-			return;
-		}
-
 		const phq9Score = phq9.reduce((total, current) => total + current, 0);
 
 		try {
@@ -141,7 +133,7 @@ export default function SurveyPage() {
 				body: JSON.stringify({
 					userKey,
 					phq9Score,
-					tiktokData: tiktokJson,
+					videoList, // Sending only VideoList
 					agreedTerms,
 					agreedExtra: user?.isOver18 ? null : agreedExtra,
 				}),
@@ -159,6 +151,32 @@ export default function SurveyPage() {
 			setError((err as Error).message);
 		} finally {
 			setSubmitting(false);
+		}
+	};
+
+	const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+		const file = e.target.files && e.target.files[0];
+		if (file) {
+			const reader = new FileReader();
+			reader.onload = (event) => {
+				try {
+					const json = JSON.parse(event.target?.result as string);
+					const extractedVideoList =
+						json?.Activity?.["Video Browsing History"]?.VideoList;
+					if (Array.isArray(extractedVideoList)) {
+						setVideoList(extractedVideoList);
+					} else {
+						throw new Error(
+							"VideoList is not found or is not an array."
+						);
+					}
+				} catch (err) {
+					setError(
+						"Invalid JSON structure. Unable to extract VideoList."
+					);
+				}
+			};
+			reader.readAsText(file);
 		}
 	};
 
@@ -239,18 +257,14 @@ export default function SurveyPage() {
 						))}
 
 						<div className="space-y-2">
-							<Label htmlFor="tiktokData">
-								Upload TikTok Data (JSON) *
+							<Label htmlFor="videoList">
+								Upload VideoList JSON *
 							</Label>
 							<Input
-								id="tiktokData"
+								id="videoList"
 								type="file"
 								accept=".json"
-								onChange={(e) => {
-									if (e.target.files && e.target.files[0]) {
-										setTiktokData(e.target.files[0]);
-									}
-								}}
+								onChange={handleFileUpload}
 								required
 							/>
 						</div>

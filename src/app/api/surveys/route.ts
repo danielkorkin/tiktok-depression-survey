@@ -1,20 +1,41 @@
-import { NextResponse } from "next/server";
-import prisma from "../../../lib/prisma";
+// src/app/api/surveys/route.ts
 
-interface SubmitSurveyBody {
+import { NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
+
+interface SurveyRequestBody {
 	userKey: string;
 	phq9Score: number;
-	tiktokData: any;
+	videoList: any[]; // Adjust the type based on your VideoList structure
 	agreedTerms: boolean;
-	agreedExtra: boolean | null;
+	agreedExtra?: boolean | null;
 }
 
 export async function POST(request: Request) {
-	const body: SubmitSurveyBody = await request.json();
-
 	try {
+		const body: SurveyRequestBody = await request.json();
+
+		const { userKey, phq9Score, videoList, agreedTerms, agreedExtra } =
+			body;
+
+		// Validate required fields
+		if (
+			!userKey ||
+			typeof phq9Score !== "number" ||
+			!Array.isArray(videoList) ||
+			typeof agreedTerms !== "boolean"
+		) {
+			return NextResponse.json(
+				{ error: "Missing or invalid required fields." },
+				{ status: 400 }
+			);
+		}
+
+		// Optionally, further validate the structure of videoList here
+
+		// Find the user by userKey
 		const user = await prisma.user.findUnique({
-			where: { userKey: body.userKey },
+			where: { userKey },
 		});
 
 		if (!user) {
@@ -24,20 +45,24 @@ export async function POST(request: Request) {
 			);
 		}
 
+		// Check if the user has already submitted a survey
 		if (user.survey) {
 			return NextResponse.json(
-				{ error: "Survey already completed." },
+				{ error: "Survey already submitted for this user." },
 				{ status: 400 }
 			);
 		}
 
+		// Create the survey
 		const survey = await prisma.survey.create({
 			data: {
-				phq9Score: body.phq9Score,
-				tiktokData: body.tiktokData,
-				agreedTerms: body.agreedTerms,
-				agreedExtra: body.agreedExtra,
-				user: { connect: { id: user.id } },
+				phq9Score,
+				videoList,
+				agreedTerms,
+				agreedExtra: user.isOver18 ? null : agreedExtra, // Store agreedExtra only if user is under 18
+				user: {
+					connect: { userKey },
+				},
 			},
 		});
 
@@ -46,8 +71,9 @@ export async function POST(request: Request) {
 			{ status: 201 }
 		);
 	} catch (error) {
+		console.error("Error submitting survey:", error);
 		return NextResponse.json(
-			{ error: "Failed to submit survey." },
+			{ error: "Internal Server Error." },
 			{ status: 500 }
 		);
 	}
