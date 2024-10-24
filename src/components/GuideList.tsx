@@ -45,7 +45,7 @@ const GuideList: React.FC<GuideListProps> = ({ guides }) => {
 				placeholder="Search guides..."
 				value={searchQuery}
 				onChange={(e) => setSearchQuery(e.target.value)}
-				className="mb-6 p-2 border rounded w-full"
+				className="mb-6 p-2 border rounded w-full dark:bg-gray-700 dark:text-white"
 			/>
 			<ul className="space-y-4">
 				{filteredGuides.map((guide) => (
@@ -55,10 +55,10 @@ const GuideList: React.FC<GuideListProps> = ({ guides }) => {
 								{guide.meta.title}
 							</h2>
 						</Link>
-						<p className="text-gray-600">
+						<p className="text-gray-600 dark:text-gray-300">
 							{guide.meta.description}
 						</p>
-						<p className="text-sm text-gray-500">
+						<p className="text-sm text-gray-500 dark:text-gray-400">
 							By {guide.meta.author} | Created at:{" "}
 							{new Date(
 								guide.meta.createdAt
