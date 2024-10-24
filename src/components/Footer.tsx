@@ -11,7 +11,7 @@ export default function Footer() {
 					<div className="px-5 py-2">
 						<Link
 							href="/legal"
-							className="text-base text-gray-500 hover:text-gray-900"
+							className="text-base text-gray-500 hover:text-gray-900 dark:hover:text-gray-100"
 						>
 							Legal
 						</Link>
@@ -19,7 +19,7 @@ export default function Footer() {
 					<div className="px-5 py-2">
 						<Link
 							href="/source-code"
-							className="text-base text-gray-500 hover:text-gray-900"
+							className="text-base text-gray-500 hover:text-gray-900 dark:hover:text-gray-100"
 						>
 							Source Code
 						</Link>
@@ -27,7 +27,7 @@ export default function Footer() {
 					<div className="px-5 py-2">
 						<Link
 							href="/contact"
-							className="text-base text-gray-500 hover:text-gray-900"
+							className="text-base text-gray-500 hover:text-gray-900 dark:hover:text-gray-100"
 						>
 							Contact
 						</Link>
