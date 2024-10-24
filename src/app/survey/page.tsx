@@ -1,5 +1,3 @@
-// src/app/survey/page.tsx
-
 "use client";
 
 import { useState, useEffect } from "react";
@@ -25,6 +23,7 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Loader2 } from "lucide-react";
+import { ConfettiButton } from "@/components/ui/confetti";
 
 const PHQ9Questions = [
 	"Little interest or pleasure in doing things",
@@ -54,10 +53,9 @@ export default function SurveyPage() {
 	const [error, setError] = useState<string | null>(null);
 
 	const [phq9, setPhq9] = useState<number[]>(Array(9).fill(0));
-	const [videoList, setVideoList] = useState<any[] | null>(null); // Updated state to store VideoList
+	const [videoList, setVideoList] = useState<any[] | null>(null);
 	const [agreedTerms, setAgreedTerms] = useState<boolean>(false);
 	const [agreedExtra, setAgreedExtra] = useState<boolean>(false);
-	const [success, setSuccess] = useState<string | null>(null);
 	const [submitting, setSubmitting] = useState<boolean>(false);
 
 	useEffect(() => {
@@ -96,7 +94,6 @@ export default function SurveyPage() {
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
 		setError(null);
-		setSuccess(null);
 
 		if (!userKey) {
 			setError("Invalid user key.");
@@ -133,7 +130,7 @@ export default function SurveyPage() {
 				body: JSON.stringify({
 					userKey,
 					phq9Score,
-					videoList, // Sending only VideoList
+					videoList,
 					agreedTerms,
 					agreedExtra: user?.isOver18 ? null : agreedExtra,
 				}),
@@ -144,9 +141,8 @@ export default function SurveyPage() {
 				throw new Error(errorData.error || "Failed to submit survey.");
 			}
 
-			setSuccess(
-				"Survey submitted successfully. Thank you for your participation!"
-			);
+			// Redirect to the thank you page after successful submission
+			router.push("/thank-you");
 		} catch (err) {
 			setError((err as Error).message);
 		} finally {
@@ -211,12 +207,6 @@ export default function SurveyPage() {
 				</CardHeader>
 				<form onSubmit={handleSubmit}>
 					<CardContent className="space-y-6">
-						{success && (
-							<Alert>
-								<AlertTitle>Success</AlertTitle>
-								<AlertDescription>{success}</AlertDescription>
-							</Alert>
-						)}
 						{error && (
 							<Alert variant="destructive">
 								<AlertTitle>Error</AlertTitle>
@@ -306,7 +296,7 @@ export default function SurveyPage() {
 						)}
 					</CardContent>
 					<CardFooter>
-						<Button
+						<ConfettiButton
 							type="submit"
 							disabled={submitting}
 							className="w-full"
@@ -315,7 +305,7 @@ export default function SurveyPage() {
 								<Loader2 className="mr-2 h-4 w-4 animate-spin" />
 							) : null}
 							{submitting ? "Submitting..." : "Submit"}
-						</Button>
+						</ConfettiButton>
 					</CardFooter>
 				</form>
 			</Card>
