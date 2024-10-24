@@ -63,7 +63,7 @@ export default async function GuidePage({ params }: GuidePageProps) {
 				at: {new Date(guide.meta.updatedAt).toLocaleDateString()}
 			</p>
 			<div
-				className="prose prose-lg max-w-none dark:prose-dark"
+				className="prose prose-lg max-w-none dark:prose-invert"
 				dangerouslySetInnerHTML={{ __html: guide.content }}
 			/>
 		</div>
