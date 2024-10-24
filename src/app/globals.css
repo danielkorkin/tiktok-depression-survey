@@ -1,6 +1,9 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@import '../../node_modules/prismjs/themes/prism-tomorrow.css';
+
 @layer base {
 	:root {
 		--background: 0 0% 100%;
