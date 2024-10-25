@@ -8,6 +8,12 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
+import {
+	Accordion,
+	AccordionContent,
+	AccordionItem,
+	AccordionTrigger,
+} from "@/components/ui/accordion";
 
 export default function Home() {
 	return (
@@ -19,8 +25,8 @@ export default function Home() {
 							Welcome to Our TikTok and Mental Health Study
 						</CardTitle>
 						<CardDescription className="text-center">
-							We&apos;re investigating the relationship between TikTok
-							usage and mental health.
+							We&apos;re investigating the relationship between
+							TikTok usage and mental health.
 						</CardDescription>
 					</CardHeader>
 					<CardContent>
@@ -57,11 +63,21 @@ export default function Home() {
 				<h2 className="text-2xl font-bold mb-4">
 					Frequently Asked Questions
 				</h2>
-				<ul className="list-disc pl-5 space-y-2">
-					<li>How long will the study take?</li>
-					<li>Is my data kept confidential?</li>
-					<li>What are the benefits of participating?</li>
-				</ul>
+				<Accordion type="multiple" collapsible>
+					<AccordionItem value="item-1">
+						<AccordionTrigger>How is your privacy and inormation protected?</AccordionTrigger>
+						<AccordionContent>
+							Your information is completely anonomous and will not be shared. Learn more at <Link href="/guide/information-privacy" className="text-primary hover:underline">Information Privacy</Link>
+						</AccordionContent>
+					</AccordionItem>
+					<AccordionItem value="item-2">
+						<AccordionTrigger>What is this survey for?</AccordionTrigger>
+						<AccordionContent>
+							This survey is for a Science Fair project and Research Paper about Detecting Depression using Social Media. Learn more at <Link href="/guide/about" className="text-primary hover:underline">Getting Started</Link>
+						</AccordionContent>
+					</AccordionItem>
+				</Accordion>
+
 				<Link
 					href="/faq"
 					className="text-primary hover:underline block mt-4"
@@ -86,8 +102,8 @@ export default function Home() {
 			<section>
 				<h2 className="text-2xl font-bold mb-4">Open Source</h2>
 				<p className="mb-4">
-					We believe in transparency and collaboration. That&apos;s why
-					we&apos;ve made the source code for this study publicly
+					We believe in transparency and collaboration. That&apos;s
+					why we&apos;ve made the source code for this study publicly
 					available.
 				</p>
 				<Link
