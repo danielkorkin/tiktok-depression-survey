@@ -9,13 +9,13 @@ import {
 
 export default function Home() {
 	return (
-		<div className="min-h-screen bg-gray-50">
+		<div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
 			<header className="bg-primary text-white py-16">
 				<div className="container mx-auto px-4">
-					<h1 className="text-4xl md:text-5xl font-bold mb-4 text-center">
+					<h1 className="text-4xl md:text-5xl font-bold mb-4 text-center dark:text-gray-900">
 						TikTok and Mental Health Study
 					</h1>
-					<p className="text-xl md:text-2xl text-center mb-8">
+					<p className="text-xl md:text-2xl text-center mb-8 dark:text-gray-900">
 						Investigating the relationship between TikTok usage and
 						mental well-being
 					</p>
@@ -52,7 +52,7 @@ export default function Home() {
 					</div>
 				</section>
 
-				<section className="bg-white py-16">
+				<section className="bg-white dark:bg-gray-800 py-16">
 					<div className="container mx-auto px-4">
 						<h2 className="text-3xl font-bold mb-6">
 							Frequently Asked Questions
@@ -121,13 +121,13 @@ export default function Home() {
 					</div>
 				</section>
 
-				<section className="bg-white py-16">
+				<section className="bg-white dark:bg-gray-800 py-16">
 					<div className="container mx-auto px-4">
 						<h2 className="text-3xl font-bold mb-6">Open Source</h2>
 						<p className="text-lg mb-6">
-							We believe in transparency and collaboration. That&apos;s
-							why we&apos;ve made the source code for this study
-							publicly available.
+							We believe in transparency and collaboration.
+							That&apos;s why we&apos;ve made the source code for
+							this study publicly available.
 						</p>
 						<Link
 							href="/source-code"
