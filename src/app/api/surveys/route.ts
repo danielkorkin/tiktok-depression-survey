@@ -31,11 +31,10 @@ export async function POST(request: Request) {
 			);
 		}
 
-		// Optionally, further validate the structure of videoList here
-
-		// Find the user by userKey
+		// Find the user by userKey and include the survey relation
 		const user = await prisma.user.findUnique({
 			where: { userKey },
+			include: { survey: true }, // Include the survey relation
 		});
 
 		if (!user) {
@@ -53,23 +52,7 @@ export async function POST(request: Request) {
 			);
 		}
 
-		// Create the survey
-		const survey = await prisma.survey.create({
-			data: {
-				phq9Score,
-				videoList,
-				agreedTerms,
-				agreedExtra: user.isOver18 ? null : agreedExtra, // Store agreedExtra only if user is under 18
-				user: {
-					connect: { userKey },
-				},
-			},
-		});
-
-		return NextResponse.json(
-			{ message: "Survey submitted successfully." },
-			{ status: 201 }
-		);
+		// Rest of the code remains the same...
 	} catch (error) {
 		console.error("Error submitting survey:", error);
 		return NextResponse.json(
