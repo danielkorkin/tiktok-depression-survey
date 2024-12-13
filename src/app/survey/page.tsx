@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
 	Card,
@@ -43,7 +43,7 @@ interface UserData {
 	isOver18: boolean | null;
 }
 
-export default function SurveyPage() {
+function SurveyPageContent() {
 	const searchParams = useSearchParams();
 	const router = useRouter();
 	const userKey = searchParams.get("key");
@@ -51,7 +51,6 @@ export default function SurveyPage() {
 	const [user, setUser] = useState<UserData | null>(null);
 	const [loading, setLoading] = useState<boolean>(true);
 	const [error, setError] = useState<string | null>(null);
-
 	const [phq9, setPhq9] = useState<number[]>(Array(9).fill(0));
 	const [videoList, setVideoList] = useState<any[] | null>(null);
 	const [agreedTerms, setAgreedTerms] = useState<boolean>(false);
@@ -310,5 +309,19 @@ export default function SurveyPage() {
 				</form>
 			</Card>
 		</div>
+	);
+}
+
+export default function SurveyPage() {
+	return (
+		<Suspense
+			fallback={
+				<div className="flex items-center justify-center min-h-screen">
+					<Loader2 className="h-8 w-8 animate-spin" />
+				</div>
+			}
+		>
+			<SurveyPageContent />
+		</Suspense>
 	);
 }
