@@ -2,11 +2,12 @@
 
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { encryptWithPublicKey } from "@/lib/encryption";
 
 interface SurveyRequestBody {
 	userKey: string;
 	phq9Score: number;
-	videoList: any[]; // Adjust the type based on your VideoList structure
+	videoList: any[];
 	agreedTerms: boolean;
 	agreedExtra?: boolean | null;
 }
@@ -14,7 +15,6 @@ interface SurveyRequestBody {
 export async function POST(request: Request) {
 	try {
 		const body: SurveyRequestBody = await request.json();
-
 		const { userKey, phq9Score, videoList, agreedTerms, agreedExtra } =
 			body;
 
@@ -34,7 +34,7 @@ export async function POST(request: Request) {
 		// Find the user by userKey and include the survey relation
 		const user = await prisma.user.findUnique({
 			where: { userKey },
-			include: { survey: true }, // Include the survey relation
+			include: { survey: true },
 		});
 
 		if (!user) {
@@ -52,7 +52,21 @@ export async function POST(request: Request) {
 			);
 		}
 
-		// Rest of the code remains the same...
+		// Encrypt the video list data
+		const encryptedVideoList = encryptWithPublicKey(videoList);
+
+		// Create survey with encrypted data
+		const survey = await prisma.survey.create({
+			data: {
+				userId: user.id,
+				phq9Score,
+				videoList: encryptedVideoList,
+				agreedTerms,
+				agreedExtra,
+			},
+		});
+
+		return NextResponse.json({ success: true }, { status: 201 });
 	} catch (error) {
 		console.error("Error submitting survey:", error);
 		return NextResponse.json(
