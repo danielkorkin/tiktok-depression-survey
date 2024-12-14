@@ -53,14 +53,14 @@ export async function POST(request: Request) {
 		}
 
 		// Encrypt the video list data
-		const encryptedVideoList = encryptWithPublicKey(videoList);
+		const encryptedChunks = encryptWithPublicKey(videoList);
 
-		// Create survey with encrypted data
+		// Create survey with encrypted data array
 		const survey = await prisma.survey.create({
 			data: {
 				userId: user.id,
 				phq9Score,
-				videoList: encryptedVideoList,
+				videoList: JSON.stringify(encryptedChunks), // Store array as JSON string
 				agreedTerms,
 				agreedExtra,
 			},
