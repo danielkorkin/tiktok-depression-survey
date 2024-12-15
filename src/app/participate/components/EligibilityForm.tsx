@@ -1,5 +1,6 @@
 "use client";
 
+import { getLocalTimeZone, CalendarDate } from "@internationalized/date";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import {
@@ -27,10 +28,20 @@ import { CalendarIcon, Copy, Check } from "lucide-react";
 import Link from "next/link";
 import CalendarInput from "./CalendarInput"; // Import the InputDemo component
 
-export default function EligibilityForm() {
-	const [usesTikTok, setUsesTikTok] = useState<string | null>(null);
-	const [isEnglish, setIsEnglish] = useState<string | null>(null);
-	const [dateOfBirth, setDateOfBirth] = useState<Date | undefined>();
+interface EligibilityFormProps {
+	onSubmit?: (data: {
+		userKey: string;
+		usesTikTok: boolean;
+		isEnglish: boolean;
+		isOver13: boolean;
+		isOver18: boolean;
+	}) => void;
+}
+
+export default function EligibilityForm({ onSubmit }: EligibilityFormProps) {
+	const [usesTikTok, setUsesTikTok] = useState<string>();
+	const [isEnglish, setIsEnglish] = useState<string>();
+	const [dateOfBirth, setDateOfBirth] = useState<CalendarDate | null>(null);
 	const [dateInputValue, setDateInputValue] = useState("");
 	const [error, setError] = useState<string | null>(null);
 	const [userKey, setUserKey] = useState<string | null>(null);
@@ -64,8 +75,10 @@ export default function EligibilityForm() {
 			return;
 		}
 
-		const age = calculateAge(new Date(dateOfBirth));
-		const isOver13 = age > 12; // Changed from age >= 13
+		// Convert CalendarDate to JavaScript Date using toDate()
+		const dateObj = dateOfBirth.toDate(getLocalTimeZone());
+		const age = calculateAge(dateObj);
+		const isOver13 = age > 12;
 		const isOver18 = age >= 18;
 
 		if (!isOver13) {
@@ -202,7 +215,7 @@ export default function EligibilityForm() {
 						<div className="space-y-2">
 							<CalendarInput
 								value={dateOfBirth}
-								onChange={(date) => {
+								onChange={(date: CalendarDate | null) => {
 									setDateOfBirth(date);
 									setDateInputValue(
 										date ? date.toString() : ""
