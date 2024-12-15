@@ -32,7 +32,13 @@ const styles = StyleSheet.create({
 	signature: { marginTop: 20, borderTop: 1, paddingTop: 10 },
 });
 
-const ConsentContent = ({ isMinor }: { isMinor: boolean }) => (
+const ConsentContent = ({
+	isMinor,
+	formData,
+}: {
+	isMinor: boolean;
+	formData: ConsentFormData;
+}) => (
 	<Document>
 		<Page size="A4" style={styles.page}>
 			<Text style={styles.title}>
@@ -126,11 +132,13 @@ const ConsentContent = ({ isMinor }: { isMinor: boolean }) => (
 					Adult Informed Consent or Minor Assent
 				</Text>
 				<Text style={styles.text}>
-					Research Participant Printed Name: {"{participantName}"}
+					Research Participant Printed Name:{" "}
+					{formData.participantName}
 				</Text>
-				<Text style={styles.text}>Signature: {"{signature}"}</Text>
+				<Text style={styles.text}>Signature: [Signature Image]</Text>
 				<Text style={styles.text}>
-					Date Reviewed & Signed: {"{signatureDate}"}
+					Date Reviewed & Signed:{" "}
+					{format(formData.signatureDate, "MM/dd/yyyy")}
 				</Text>
 			</View>
 
@@ -140,13 +148,16 @@ const ConsentContent = ({ isMinor }: { isMinor: boolean }) => (
 						Parental/Guardian Permission
 					</Text>
 					<Text style={styles.text}>
-						Parent/Guardian Printed Name: {"{parentName}"}
+						Parent/Guardian Printed Name: {formData.parentName}
 					</Text>
 					<Text style={styles.text}>
-						Signature: {"{parentSignature}"}
+						Signature: [Signature Image]
 					</Text>
 					<Text style={styles.text}>
-						Date Reviewed & Signed: {"{parentDate}"}
+						Date Reviewed & Signed:{" "}
+						{formData.parentDate
+							? format(formData.parentDate, "MM/dd/yyyy")
+							: ""}
 					</Text>
 				</View>
 			)}
@@ -276,12 +287,12 @@ export function ConsentForm({ isMinor, onComplete }: ConsentFormProps) {
 	const [error, setError] = useState<string | null>(null);
 
 	const handleComplete = () => {
-		if (!formData.participantName || !participantSig) {
+		if (!formData.participantName || !participantSig?.toDataURL()) {
 			setError("Please complete all required fields");
 			return;
 		}
 
-		if (isMinor && (!formData.parentName || !parentSig)) {
+		if (isMinor && (!formData.parentName || !parentSig?.toDataURL())) {
 			setError("Please complete all parent/guardian fields");
 			return;
 		}
@@ -296,6 +307,32 @@ export function ConsentForm({ isMinor, onComplete }: ConsentFormProps) {
 		setCompleted(true);
 		onComplete(data);
 	};
+
+	const ParentSignature = (
+		<div className="space-y-2">
+			<Label>Parent/Guardian Signature *</Label>
+			<div className="border rounded-md p-2 bg-white">
+				<SignatureCanvas
+					ref={(ref) => setParentSig(ref)}
+					canvasProps={{
+						className: "w-full h-32",
+						style: {
+							pointerEvents: completed ? "none" : "auto",
+						},
+					}}
+				/>
+			</div>
+			{!completed && (
+				<Button
+					type="button"
+					variant="outline"
+					onClick={() => parentSig?.clear()}
+				>
+					Clear
+				</Button>
+			)}
+		</div>
+	);
 
 	return (
 		<Card className="w-full max-w-2xl mx-auto">
@@ -334,7 +371,14 @@ export function ConsentForm({ isMinor, onComplete }: ConsentFormProps) {
 						<div className="border rounded-md p-2 bg-white">
 							<SignatureCanvas
 								ref={(ref) => setParticipantSig(ref)}
-								canvasProps={{ className: "w-full h-32" }}
+								canvasProps={{
+									className: "w-full h-32",
+									style: {
+										pointerEvents: completed
+											? "none"
+											: "auto",
+									},
+								}}
 							/>
 						</div>
 						{!completed && (
@@ -381,26 +425,7 @@ export function ConsentForm({ isMinor, onComplete }: ConsentFormProps) {
 								/>
 							</div>
 
-							<div className="space-y-2">
-								<Label>Parent/Guardian Signature *</Label>
-								<div className="border rounded-md p-2 bg-white">
-									<SignatureCanvas
-										ref={(ref) => setParentSig(ref)}
-										canvasProps={{
-											className: "w-full h-32",
-										}}
-									/>
-								</div>
-								{!completed && (
-									<Button
-										type="button"
-										variant="outline"
-										onClick={() => parentSig?.clear()}
-									>
-										Clear
-									</Button>
-								)}
-							</div>
+							{ParentSignature}
 
 							<div className="space-y-2">
 								<Label>Parent/Guardian Date Signed *</Label>
@@ -424,7 +449,12 @@ export function ConsentForm({ isMinor, onComplete }: ConsentFormProps) {
 				<div className="flex justify-end space-x-2">
 					{completed ? (
 						<PDFDownloadLink
-							document={<ConsentContent isMinor={isMinor} />}
+							document={
+								<ConsentContent
+									isMinor={isMinor}
+									formData={formData}
+								/>
+							}
 							fileName="consent-form.pdf"
 						>
 							{({ loading }) => (
