@@ -25,6 +25,7 @@ import { cn } from "@/lib/utils";
 import { format, parse, isValid } from "date-fns";
 import { CalendarIcon, Copy, Check } from "lucide-react";
 import Link from "next/link";
+import CalendarInput from "./CalendarInput"; // Import the InputDemo component
 
 export default function EligibilityForm() {
 	const [usesTikTok, setUsesTikTok] = useState<string | null>(null);
@@ -38,11 +39,12 @@ export default function EligibilityForm() {
 
 	const calculateAge = (dob: Date): number => {
 		const today = new Date();
-		let age = today.getFullYear() - dob.getFullYear();
-		const monthDiff = today.getMonth() - dob.getMonth();
+		const birthDate = new Date(dob);
+		let age = today.getFullYear() - birthDate.getFullYear();
+		const monthDiff = today.getMonth() - birthDate.getMonth();
 		if (
 			monthDiff < 0 ||
-			(monthDiff === 0 && today.getDate() < dob.getDate())
+			(monthDiff === 0 && today.getDate() < birthDate.getDate())
 		) {
 			age--;
 		}
@@ -51,22 +53,6 @@ export default function EligibilityForm() {
 
 	const generateUserKey = (): string => {
 		return Math.random().toString(36).substr(2, 9).toUpperCase();
-	};
-
-	const handleDateInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		const value = e.target.value;
-		setDateInputValue(value);
-		const parsedDate = parse(value, "MM/dd/yyyy", new Date());
-		if (isValid(parsedDate)) {
-			setDateOfBirth(parsedDate);
-		}
-	};
-
-	const handleCalendarSelect = (date: Date | undefined) => {
-		setDateOfBirth(date);
-		if (date) {
-			setDateInputValue(format(date, "MM/dd/yyyy"));
-		}
 	};
 
 	const handleSubmit = async (e: React.FormEvent) => {
@@ -78,7 +64,7 @@ export default function EligibilityForm() {
 			return;
 		}
 
-		const age = calculateAge(dateOfBirth);
+		const age = calculateAge(new Date(dateOfBirth));
 		const isOver13 = age >= 13;
 		const isOver18 = age >= 18;
 
@@ -212,39 +198,17 @@ export default function EligibilityForm() {
 					</div>
 
 					<div className="space-y-2">
-						<Label htmlFor="dob">
-							Date of Birth (MM/DD/YYYY) *
-						</Label>
-						<div className="flex space-x-2">
-							<Input
-								id="dob"
-								value={dateInputValue}
-								onChange={handleDateInputChange}
-								placeholder="MM/DD/YYYY"
-								className="w-full"
+						<Label>Date of Birth *</Label>
+						<div className="space-y-2">
+							<CalendarInput
+								value={dateOfBirth}
+								onChange={(date) => {
+									setDateOfBirth(date);
+									setDateInputValue(
+										date ? date.toString() : ""
+									);
+								}}
 							/>
-							<Popover>
-								<PopoverTrigger asChild>
-									<Button variant="outline" size="icon">
-										<CalendarIcon className="h-4 w-4" />
-									</Button>
-								</PopoverTrigger>
-								<PopoverContent
-									className="w-auto p-0"
-									align="end"
-								>
-									<Calendar
-										mode="single"
-										selected={dateOfBirth}
-										onSelect={handleCalendarSelect}
-										disabled={(date) =>
-											date > new Date() ||
-											date < new Date("1900-01-01")
-										}
-										initialFocus
-									/>
-								</PopoverContent>
-							</Popover>
 						</div>
 					</div>
 				</CardContent>
