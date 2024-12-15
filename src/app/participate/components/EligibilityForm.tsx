@@ -65,7 +65,7 @@ export default function EligibilityForm() {
 		}
 
 		const age = calculateAge(new Date(dateOfBirth));
-		const isOver13 = age >= 13;
+		const isOver13 = age > 12; // Changed from age >= 13
 		const isOver18 = age >= 18;
 
 		if (!isOver13) {
