@@ -24,6 +24,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Loader2 } from "lucide-react";
 import { ConfettiButton } from "@/components/ui/confetti";
+import { ConsentForm } from "@/components/consent/ConsentForm";
 
 const PHQ9Questions = [
 	"Little interest or pleasure in doing things",
@@ -56,6 +57,7 @@ function SurveyPageContent() {
 	const [agreedTerms, setAgreedTerms] = useState<boolean>(false);
 	const [agreedExtra, setAgreedExtra] = useState<boolean>(false);
 	const [submitting, setSubmitting] = useState<boolean>(false);
+	const [consentCompleted, setConsentCompleted] = useState(false);
 
 	useEffect(() => {
 		if (!userKey) {
@@ -113,6 +115,11 @@ function SurveyPageContent() {
 			setError(
 				"You must agree to the additional terms for users under 18."
 			);
+			return;
+		}
+
+		if (!consentCompleted) {
+			setError("Please complete the consent form first");
 			return;
 		}
 
@@ -175,6 +182,21 @@ function SurveyPageContent() {
 		}
 	};
 
+	const handleConsentComplete = async (formData: ConsentFormData) => {
+		try {
+			const res = await fetch("/api/consent", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify(formData),
+			});
+
+			if (!res.ok) throw new Error("Failed to save consent form");
+			setConsentCompleted(true);
+		} catch (error) {
+			setError((error as Error).message);
+		}
+	};
+
 	if (loading) {
 		return (
 			<div className="flex items-center justify-center min-h-screen">
@@ -195,7 +217,11 @@ function SurveyPageContent() {
 	}
 
 	return (
-		<div className="container mx-auto py-10">
+		<div className="container mx-auto py-10 space-y-6">
+			<ConsentForm
+				isMinor={user?.isOver18 === false}
+				onComplete={handleConsentComplete}
+			/>
 			<Card className="w-full max-w-2xl mx-auto">
 				<CardHeader>
 					<CardTitle>PHQ-9 Survey</CardTitle>

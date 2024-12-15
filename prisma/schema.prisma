@@ -34,3 +34,16 @@ model Survey {
   userId      Int      @unique
   submittedAt DateTime @default(now())
 }
+
+model ConsentForm {
+  id              Int       @id @default(autoincrement())
+  participantName String
+  signature       String // Store signature as SVG string
+  signatureDate   DateTime
+  isMinor         Boolean
+  parentName      String?
+  parentSignature String? // Store parent signature as SVG string
+  parentDate      DateTime?
+  createdAt       DateTime  @default(now())
+  completed       Boolean   @default(false)
+}
