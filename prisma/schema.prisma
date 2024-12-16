@@ -47,3 +47,4 @@ model ConsentForm {
   createdAt       DateTime  @default(now())
   completed       Boolean   @default(false)
 }
+
