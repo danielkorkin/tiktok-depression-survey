@@ -24,7 +24,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Loader2 } from "lucide-react";
 import { ConfettiButton } from "@/components/ui/confetti";
-import { ConsentForm } from "@/components/consent/ConsentForm";
+import { ConsentForm, ConsentFormData } from "@/components/consent/ConsentForm";
 
 const PHQ9Questions = [
 	"Little interest or pleasure in doing things",
@@ -58,6 +58,9 @@ function SurveyPageContent() {
 	const [agreedExtra, setAgreedExtra] = useState<boolean>(false);
 	const [submitting, setSubmitting] = useState<boolean>(false);
 	const [consentCompleted, setConsentCompleted] = useState(false);
+	const [fieldErrors, setFieldErrors] = useState<{ [key: string]: string }>(
+		{}
+	);
 
 	useEffect(() => {
 		if (!userKey) {
@@ -95,6 +98,13 @@ function SurveyPageContent() {
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
 		setError(null);
+		setFieldErrors({});
+
+		const errors = validateForm();
+		if (Object.keys(errors).length > 0) {
+			setFieldErrors(errors);
+			return;
+		}
 
 		if (!userKey) {
 			setError("Invalid user key.");
@@ -197,6 +207,36 @@ function SurveyPageContent() {
 		}
 	};
 
+	const validateForm = (): { [key: string]: string } => {
+		const errors: { [key: string]: string } = {};
+
+		if (!consentCompleted) {
+			errors.consent = "Please complete the consent form";
+		}
+
+		phq9.forEach((score, index) => {
+			if (score < 0 || score > 3) {
+				errors[`phq9-${index}`] = "Please select an option";
+			}
+		});
+
+		if (!videoList || !Array.isArray(videoList) || videoList.length === 0) {
+			errors.videoList =
+				"Please upload a valid TikTok VideoList JSON file";
+		}
+
+		if (!agreedTerms) {
+			errors.terms = "Please agree to the terms and conditions";
+		}
+
+		if (user?.isOver18 === false && !agreedExtra) {
+			errors.extraTerms =
+				"Please agree to the additional terms for users under 18";
+		}
+
+		return errors;
+	};
+
 	if (loading) {
 		return (
 			<div className="flex items-center justify-center min-h-screen">
@@ -232,10 +272,12 @@ function SurveyPageContent() {
 				</CardHeader>
 				<form onSubmit={handleSubmit}>
 					<CardContent className="space-y-6">
-						{error && (
+						{fieldErrors.consent && (
 							<Alert variant="destructive">
 								<AlertTitle>Error</AlertTitle>
-								<AlertDescription>{error}</AlertDescription>
+								<AlertDescription>
+									{fieldErrors.consent}
+								</AlertDescription>
 							</Alert>
 						)}
 
@@ -250,7 +292,14 @@ function SurveyPageContent() {
 									}
 									value={phq9[index].toString()}
 								>
-									<SelectTrigger id={`phq9-${index}`}>
+									<SelectTrigger
+										id={`phq9-${index}`}
+										className={
+											fieldErrors[`phq9-${index}`]
+												? "border-red-500"
+												: ""
+										}
+									>
 										<SelectValue placeholder="Select an option" />
 									</SelectTrigger>
 									<SelectContent>
@@ -268,6 +317,11 @@ function SurveyPageContent() {
 										</SelectItem>
 									</SelectContent>
 								</Select>
+								{fieldErrors[`phq9-${index}`] && (
+									<p className="text-red-500 text-sm">
+										{fieldErrors[`phq9-${index}`]}
+									</p>
+								)}
 							</div>
 						))}
 
@@ -281,7 +335,17 @@ function SurveyPageContent() {
 								accept=".json"
 								onChange={handleFileUpload}
 								required
+								className={
+									fieldErrors.videoList
+										? "border-red-500"
+										: ""
+								}
 							/>
+							{fieldErrors.videoList && (
+								<p className="text-red-500 text-sm">
+									{fieldErrors.videoList}
+								</p>
+							)}
 						</div>
 
 						<div className="flex items-center space-x-2">
@@ -290,6 +354,9 @@ function SurveyPageContent() {
 								checked={agreedTerms}
 								onCheckedChange={(checked) =>
 									setAgreedTerms(checked as boolean)
+								}
+								className={
+									fieldErrors.terms ? "border-red-500" : ""
 								}
 							/>
 							<Label htmlFor="terms">
@@ -303,6 +370,11 @@ function SurveyPageContent() {
 								.
 							</Label>
 						</div>
+						{fieldErrors.terms && (
+							<p className="text-red-500 text-sm">
+								{fieldErrors.terms}
+							</p>
+						)}
 
 						{user?.isOver18 === false && (
 							<div className="flex items-center space-x-2">
@@ -312,11 +384,21 @@ function SurveyPageContent() {
 									onCheckedChange={(checked) =>
 										setAgreedExtra(checked as boolean)
 									}
+									className={
+										fieldErrors.extraTerms
+											? "border-red-500"
+											: ""
+									}
 								/>
 								<Label htmlFor="extraTerms">
 									I agree to the additional terms for users
 									under 18, including parental approval.
 								</Label>
+								{fieldErrors.extraTerms && (
+									<p className="text-red-500 text-sm">
+										{fieldErrors.extraTerms}
+									</p>
+								)}
 							</div>
 						)}
 					</CardContent>
