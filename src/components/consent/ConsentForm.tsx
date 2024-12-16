@@ -30,23 +30,277 @@ interface ConsentFormData {
 	parentDate?: Date;
 }
 
-const styles = StyleSheet.create({
-	page: { padding: 30 },
-	title: { fontSize: 16, marginBottom: 10 },
-	heading: { fontSize: 14, marginBottom: 10, fontWeight: "bold" },
-	text: { fontSize: 12, marginBottom: 5 },
-	signature: { marginTop: 20 },
-	signatureContainer: { height: 50, marginVertical: 10 },
-	signatureImage: { width: 200, height: 50 },
-});
-
-export function ConsentForm({
-	isMinor,
-	onComplete,
-}: {
+interface ConsentFormProps {
 	isMinor: boolean;
 	onComplete: (data: ConsentFormData) => void;
-}) {
+}
+
+const styles = StyleSheet.create({
+	page: { padding: 30 },
+	title: { fontSize: 16, marginBottom: 10, fontWeight: "bold" },
+	heading: {
+		fontSize: 14,
+		marginTop: 10,
+		marginBottom: 5,
+		fontWeight: "bold",
+	},
+	text: { fontSize: 12, marginBottom: 8 },
+	signatureBlock: { marginTop: 20, borderTop: 1, paddingTop: 10 },
+	signatureImage: { width: 200, height: 50, marginTop: 5 },
+});
+
+const FormContent = ({ isMinor = false }: { isMinor: boolean }) => (
+	<div className="space-y-4 text-sm">
+		<h3 className="font-bold">
+			Student Researchers: Daniel Korkin, Ayan Kataria, Vikram Hiranandani
+		</h3>
+		<h3 className="font-bold">
+			Title of Project: Leveraging Social Media Data and AI to Predict
+			Risk of Depression Using TikTok Algorithms
+		</h3>
+
+		<p>
+			I am asking for your voluntary participation in my science fair
+			project. Please read the following information about the project. If
+			you would like to participate, please sign in the appropriate area
+			below.
+		</p>
+
+		<div className="space-y-2">
+			<h4 className="font-semibold">Purpose of the project:</h4>
+			<p>
+				The purpose of this project is to explore how TikTok video data
+				and PHQ-9 scores can be used to train an AI.
+			</p>
+		</div>
+
+		<div className="space-y-2">
+			<h4 className="font-semibold">
+				If you participate, you will be asked to:
+			</h4>
+			<p>
+				Submit your PHQ-9 score, TikTok data downloaded from your
+				settings, and a signed Informed Consent form.
+			</p>
+		</div>
+
+		<div className="space-y-2">
+			<h4 className="font-semibold">Time required for participation:</h4>
+			<p>
+				Completing the online form will take minimal time, but
+				downloading TikTok data may take additional time depending on
+				TikTok&apos;s response, and filling out the PHQ-9 form should
+				take a few minutes.
+			</p>
+		</div>
+
+		<div className="space-y-2">
+			<h4 className="font-semibold">Potential Risks of Study:</h4>
+			<p>
+				There is minimal risk, but TikTok data may contain sensitive
+				information. However, all data is anonymized, and sensitive data
+				is stripped before leaving your computer.
+			</p>
+		</div>
+
+		<div className="space-y-2">
+			<h4 className="font-semibold">Benefits:</h4>
+			<p>
+				This study could contribute to the understanding of how social
+				media can be used for early depression screening, potentially
+				helping others in the future.
+			</p>
+		</div>
+
+		<div className="space-y-2">
+			<h4 className="font-semibold">
+				How confidentiality will be maintained:
+			</h4>
+			<p>
+				All personal information and PHQ-9 scores are submitted
+				separately. TikTok data is anonymized, with sensitive
+				information stripped before submission. TikTok video data and
+				PHQ-9 scores are linked only as anonymized datasets, making it
+				impossible to identify participants. Additionally, the
+				project&apos;s code is open-source for transparency.
+			</p>
+		</div>
+
+		<div className="space-y-2">
+			<h4 className="font-semibold">Questions about this study:</h4>
+			<p>
+				If you have any questions about this study, feel free to
+				contact: Lauren Bakale at bakalel@westboroughk12.org
+			</p>
+		</div>
+
+		<div className="space-y-2">
+			<h4 className="font-semibold">Voluntary Participation:</h4>
+			<p>
+				Participation in this study is completely voluntary. If you
+				decide not to participate there will not be negative
+				consequences. Please be aware that if you decide to participate,
+				you may stop participating at any time and you may decide not to
+				answer any specific question.
+			</p>
+		</div>
+
+		<p className="font-semibold mt-4">
+			By signing this form I am attesting that I have read and understand
+			the information above and I freely give my consent/assent to
+			participate or permission for my child to participate.
+		</p>
+	</div>
+);
+
+const ConsentContent = ({
+	isMinor,
+	formData,
+}: {
+	isMinor: boolean;
+	formData: ConsentFormData;
+}) => (
+	<Document>
+		<Page size="A4" style={styles.page}>
+			<Text style={styles.title}>
+				Student Researchers: Daniel Korkin, Ayan Kataria, Vikram
+				Hiranandani
+			</Text>
+			<Text style={styles.title}>
+				Title of Project: Leveraging Social Media Data and AI to Predict
+				Risk of Depression Using TikTok Algorithms
+			</Text>
+
+			<Text style={styles.text}>
+				I am asking for your voluntary participation in my science fair
+				project. Please read the following information about the
+				project. If you would like to participate, please sign in the
+				appropriate area below.
+			</Text>
+
+			<Text style={styles.heading}>Purpose of the project:</Text>
+			<Text style={styles.text}>
+				The purpose of this project is to explore how TikTok video data
+				and PHQ-9 scores can be used to train an AI.
+			</Text>
+
+			<Text style={styles.heading}>
+				If you participate, you will be asked to:
+			</Text>
+			<Text style={styles.text}>
+				Submit your PHQ-9 score, TikTok data downloaded from your
+				settings, and a signed Informed Consent form.
+			</Text>
+
+			<Text style={styles.heading}>Time required for participation:</Text>
+			<Text style={styles.text}>
+				Completing the online form will take minimal time, but
+				downloading TikTok data may take additional time depending on
+				TikTok&apos;s response, and filling out the PHQ-9 form should
+				take a few minutes.
+			</Text>
+
+			<Text style={styles.heading}>Potential Risks of Study:</Text>
+			<Text style={styles.text}>
+				There is minimal risk, but TikTok data may contain sensitive
+				information. However, all data is anonymized, and sensitive data
+				is stripped before leaving your computer.
+			</Text>
+
+			<Text style={styles.heading}>Benefits:</Text>
+			<Text style={styles.text}>
+				This study could contribute to the understanding of how social
+				media can be used for early depression screening, potentially
+				helping others in the future.
+			</Text>
+
+			<Text style={styles.heading}>
+				How confidentiality will be maintained:
+			</Text>
+			<Text style={styles.text}>
+				All personal information and PHQ-9 scores are submitted
+				separately. TikTok data is anonymized, with sensitive
+				information stripped before submission. TikTok video data and
+				PHQ-9 scores are linked only as anonymized datasets, making it
+				impossible to identify participants. Additionally, the
+				project&apos;s code is open-source for transparency.
+			</Text>
+
+			<Text style={styles.heading}>Questions about this study:</Text>
+			<Text style={styles.text}>
+				If you have any questions about this study, feel free to
+				contact: Lauren Bakale at bakalel@westboroughk12.org
+			</Text>
+
+			<Text style={styles.heading}>Voluntary Participation:</Text>
+			<Text style={styles.text}>
+				Participation in this study is completely voluntary. If you
+				decide not to participate there will not be negative
+				consequences. Please be aware that if you decide to participate,
+				you may stop participating at any time and you may decide not to
+				answer any specific question.
+			</Text>
+
+			<Text style={[styles.text, { marginTop: 10, fontWeight: "bold" }]}>
+				By signing this form I am attesting that I have read and
+				understand the information above and I freely give my
+				consent/assent to participate or permission for my child to
+				participate.
+			</Text>
+
+			<View style={styles.signatureBlock}>
+				<Text style={styles.heading}>
+					Adult Informed Consent or Minor Assent
+				</Text>
+				<Text style={styles.text}>
+					Research Participant Printed Name:{" "}
+					{formData.participantName}
+				</Text>
+				{formData.signature && (
+					<>
+						<Text style={styles.text}>Signature:</Text>
+						<Image
+							source={formData.signature}
+							style={styles.signatureImage}
+						/>
+					</>
+				)}
+				<Text style={styles.text}>
+					Date Reviewed & Signed:{" "}
+					{format(formData.signatureDate, "MM/dd/yyyy")}
+				</Text>
+			</View>
+
+			{isMinor && (
+				<View style={styles.signatureBlock}>
+					<Text style={styles.heading}>
+						Parental/Guardian Permission
+					</Text>
+					<Text style={styles.text}>
+						Parent/Guardian Printed Name: {formData.parentName}
+					</Text>
+					{formData.parentSignature && (
+						<>
+							<Text style={styles.text}>Signature:</Text>
+							<Image
+								source={formData.parentSignature}
+								style={styles.signatureImage}
+							/>
+						</>
+					)}
+					<Text style={styles.text}>
+						Date Reviewed & Signed:{" "}
+						{formData.parentDate
+							? format(formData.parentDate, "MM/dd/yyyy")
+							: ""}
+					</Text>
+				</View>
+			)}
+		</Page>
+	</Document>
+);
+
+export function ConsentForm({ isMinor, onComplete }: ConsentFormProps) {
 	const [formData, setFormData] = useState<ConsentFormData>({
 		participantName: "",
 		signature: "",
@@ -62,9 +316,14 @@ export function ConsentForm({
 	const [completed, setCompleted] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 
-	const handleComplete = async () => {
+	const handleComplete = () => {
 		if (!formData.participantName || !participantSigRef.current) {
 			setError("Please complete all required fields");
+			return;
+		}
+
+		if (isMinor && (!formData.parentName || !parentSigRef.current)) {
+			setError("Please complete all parent/guardian fields");
 			return;
 		}
 
@@ -97,50 +356,10 @@ export function ConsentForm({
 		}
 	};
 
-	const ConsentContent = ({ formData }: { formData: ConsentFormData }) => (
-		<Document>
-			<Page size="A4" style={styles.page}>
-				<View style={styles.signature}>
-					<Text style={styles.heading}>
-						Adult Informed Consent or Minor Assent
-					</Text>
-					<Text style={styles.text}>
-						Research Participant Name: {formData.participantName}
-					</Text>
-					{formData.signature && (
-						<View style={styles.signatureContainer}>
-							<Image
-								source={formData.signature}
-								style={styles.signatureImage}
-							/>
-						</View>
-					)}
-				</View>
-
-				{isMinor && formData.parentSignature && (
-					<View style={styles.signature}>
-						<Text style={styles.heading}>
-							Parental/Guardian Permission
-						</Text>
-						<Text style={styles.text}>
-							Parent/Guardian Name: {formData.parentName}
-						</Text>
-						<View style={styles.signatureContainer}>
-							<Image
-								source={formData.parentSignature}
-								style={styles.signatureImage}
-							/>
-						</View>
-					</View>
-				)}
-			</Page>
-		</Document>
-	);
-
 	return (
 		<Card className="w-full max-w-2xl mx-auto">
 			<CardHeader>
-				<CardTitle>Consent Form</CardTitle>
+				<CardTitle>Informed Consent Form</CardTitle>
 			</CardHeader>
 			<CardContent className="space-y-6">
 				{error && (
@@ -148,6 +367,10 @@ export function ConsentForm({
 						<AlertDescription>{error}</AlertDescription>
 					</Alert>
 				)}
+
+				<div className="prose max-w-none">
+					<FormContent isMinor={isMinor} />
+				</div>
 
 				<div className="space-y-4">
 					<div className="space-y-2">
@@ -175,6 +398,9 @@ export function ConsentForm({
 									style: {
 										border: "1px solid #ccc",
 										backgroundColor: "#fff",
+										pointerEvents: completed
+											? "none"
+											: "auto",
 									},
 								}}
 							/>
@@ -190,6 +416,22 @@ export function ConsentForm({
 								Clear
 							</Button>
 						)}
+					</div>
+
+					<div className="space-y-2">
+						<Label>Date Signed *</Label>
+						<Calendar
+							mode="single"
+							selected={formData.signatureDate}
+							onSelect={(date) =>
+								date &&
+								setFormData({
+									...formData,
+									signatureDate: date,
+								})
+							}
+							disabled={completed}
+						/>
 					</div>
 
 					{isMinor && (
@@ -219,6 +461,9 @@ export function ConsentForm({
 											style: {
 												border: "1px solid #ccc",
 												backgroundColor: "#fff",
+												pointerEvents: completed
+													? "none"
+													: "auto",
 											},
 										}}
 									/>
@@ -235,6 +480,22 @@ export function ConsentForm({
 									</Button>
 								)}
 							</div>
+
+							<div className="space-y-2">
+								<Label>Parent/Guardian Date Signed *</Label>
+								<Calendar
+									mode="single"
+									selected={formData.parentDate}
+									onSelect={(date) =>
+										date &&
+										setFormData({
+											...formData,
+											parentDate: date,
+										})
+									}
+									disabled={completed}
+								/>
+							</div>
 						</>
 					)}
 				</div>
@@ -242,7 +503,12 @@ export function ConsentForm({
 				<div className="flex justify-end space-x-2">
 					{completed ? (
 						<PDFDownloadLink
-							document={<ConsentContent formData={formData} />}
+							document={
+								<ConsentContent
+									isMinor={isMinor}
+									formData={formData}
+								/>
+							}
 							fileName="consent-form.pdf"
 						>
 							{({ loading }) => (
