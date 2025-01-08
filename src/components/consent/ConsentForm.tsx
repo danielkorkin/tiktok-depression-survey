@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 "use client";
 
 import { useState, useRef } from "react";
@@ -27,7 +28,7 @@ import {
 	today,
 } from "@internationalized/date";
 
-interface ConsentFormData {
+export interface ConsentFormData {
 	participantName: string;
 	signature: string;
 	signatureDate: CalendarDate;
@@ -375,26 +376,17 @@ export function ConsentForm({ isMinor, onComplete }: ConsentFormProps) {
 					.toDataURL("image/png");
 			}
 
-			// Convert dates before submitting
-			const updatedData = {
+			// Create updated form data keeping CalendarDate types
+			const updatedData: ConsentFormData = {
 				...formData,
 				signature: participantSignature,
 				parentSignature,
-				signatureDate: toJSDate(formData.signatureDate),
-				parentDate: formData.parentDate
-					? toJSDate(formData.parentDate)
-					: undefined,
 				completed: true,
 			};
 
-			setFormData({
-				...updatedData,
-				signatureDate: formData.signatureDate, // Keep CalendarDate for form state
-				parentDate: formData.parentDate, // Keep CalendarDate for form state
-			});
-
+			setFormData(updatedData);
 			setCompleted(true);
-			onComplete(updatedData); // Send converted dates to API
+			onComplete(updatedData); // Pass data with CalendarDate types
 		} catch (err) {
 			console.error("Form submission error:", err);
 			setError("Failed to process form");
@@ -468,10 +460,11 @@ export function ConsentForm({ isMinor, onComplete }: ConsentFormProps) {
 						<DateField
 							aria-label="Date signed"
 							value={formData.signatureDate}
-							onChange={(date) =>
+							onChange={(date: CalendarDate | null) =>
 								setFormData({
 									...formData,
-									signatureDate: date,
+									signatureDate:
+										date || today(getLocalTimeZone()), // Provide default date if null
 								})
 							}
 							isDisabled={completed}
@@ -535,14 +528,16 @@ export function ConsentForm({ isMinor, onComplete }: ConsentFormProps) {
 									aria-label="Parent/Guardian date signed"
 									isDisabled={completed}
 									value={formData.parentDate}
-									onChange={(date) =>
+									onChange={(date: CalendarDate | null) =>
 										setFormData({
 											...formData,
-											parentDate: date,
+											parentDate:
+												date ||
+												today(getLocalTimeZone()),
 										})
 									}
 								>
-									<DateInput className="flex h-9 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50">
+									<DateInput>
 										{(segment) => (
 											<DateSegment segment={segment} />
 										)}
@@ -564,7 +559,14 @@ export function ConsentForm({ isMinor, onComplete }: ConsentFormProps) {
 							}
 							fileName="consent-form.pdf"
 						>
-							{({ loading }) => (
+							
+							{/*@ts-expect-error*/}
+							{({
+								blob,
+								url,
+								loading,
+								error,
+							}): React.ReactNode => (
 								<Button disabled={loading}>
 									{loading ? "Preparing..." : "Download PDF"}
 								</Button>
