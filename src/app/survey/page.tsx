@@ -362,7 +362,7 @@ function SurveyPageContent() {
 							<Label htmlFor="terms">
 								I agree to the{" "}
 								<a
-									href="/terms"
+									href="/tos"
 									className="text-primary hover:underline"
 								>
 									terms and conditions
