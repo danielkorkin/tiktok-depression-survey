@@ -27,7 +27,7 @@ export async function POST(request: Request) {
 		) {
 			return NextResponse.json(
 				{ error: "Missing or invalid required fields." },
-				{ status: 400 }
+				{ status: 400 },
 			);
 		}
 
@@ -40,7 +40,7 @@ export async function POST(request: Request) {
 		if (!user) {
 			return NextResponse.json(
 				{ error: "User not found." },
-				{ status: 404 }
+				{ status: 404 },
 			);
 		}
 
@@ -48,7 +48,7 @@ export async function POST(request: Request) {
 		if (user.survey) {
 			return NextResponse.json(
 				{ error: "Survey already submitted for this user." },
-				{ status: 400 }
+				{ status: 400 },
 			);
 		}
 
@@ -71,7 +71,7 @@ export async function POST(request: Request) {
 		console.error("Error submitting survey:", error);
 		return NextResponse.json(
 			{ error: "Internal Server Error." },
-			{ status: 500 }
+			{ status: 500 },
 		);
 	}
 }

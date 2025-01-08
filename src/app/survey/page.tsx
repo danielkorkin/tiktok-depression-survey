@@ -59,7 +59,7 @@ function SurveyPageContent() {
 	const [submitting, setSubmitting] = useState<boolean>(false);
 	const [consentCompleted, setConsentCompleted] = useState(false);
 	const [fieldErrors, setFieldErrors] = useState<{ [key: string]: string }>(
-		{}
+		{},
 	);
 
 	useEffect(() => {
@@ -74,7 +74,7 @@ function SurveyPageContent() {
 				if (!res.ok) {
 					const errorData = await res.json();
 					throw new Error(
-						errorData.error || "Failed to fetch user data."
+						errorData.error || "Failed to fetch user data.",
 					);
 				}
 				const data = await res.json();
@@ -123,7 +123,7 @@ function SurveyPageContent() {
 
 		if (user?.isOver18 === false && !agreedExtra) {
 			setError(
-				"You must agree to the additional terms for users under 18."
+				"You must agree to the additional terms for users under 18.",
 			);
 			return;
 		}
@@ -179,12 +179,12 @@ function SurveyPageContent() {
 						setVideoList(extractedVideoList);
 					} else {
 						throw new Error(
-							"VideoList is not found or is not an array."
+							"VideoList is not found or is not an array.",
 						);
 					}
 				} catch (err) {
 					setError(
-						"Invalid JSON structure. Unable to extract VideoList."
+						"Invalid JSON structure. Unable to extract VideoList.",
 					);
 				}
 			};

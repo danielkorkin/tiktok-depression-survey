@@ -3,7 +3,7 @@ import prisma from "@/lib/prisma";
 
 export async function GET(
 	request: Request,
-	{ params }: { params: { userKey: string } }
+	{ params }: { params: { userKey: string } },
 ) {
 	const { userKey } = params;
 
@@ -16,14 +16,14 @@ export async function GET(
 		if (!user) {
 			return NextResponse.json(
 				{ error: "User not found." },
-				{ status: 404 }
+				{ status: 404 },
 			);
 		}
 
 		if (user.survey) {
 			return NextResponse.json(
 				{ error: "Survey already completed." },
-				{ status: 400 }
+				{ status: 400 },
 			);
 		}
 
@@ -33,12 +33,12 @@ export async function GET(
 				userKey: user.userKey,
 				isOver18: user.isOver18,
 			},
-			{ status: 200 }
+			{ status: 200 },
 		);
 	} catch (error) {
 		return NextResponse.json(
 			{ error: "Failed to fetch user." },
-			{ status: 500 }
+			{ status: 500 },
 		);
 	}
 }

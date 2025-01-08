@@ -17,14 +17,14 @@ export async function POST(request: Request) {
 		if (!user) {
 			return NextResponse.json(
 				{ error: "User not found." },
-				{ status: 404 }
+				{ status: 404 },
 			);
 		}
 
 		if (user.survey) {
 			return NextResponse.json(
 				{ error: "Survey already completed." },
-				{ status: 400 }
+				{ status: 400 },
 			);
 		}
 
@@ -32,7 +32,7 @@ export async function POST(request: Request) {
 	} catch (error) {
 		return NextResponse.json(
 			{ error: "Failed to verify user." },
-			{ status: 500 }
+			{ status: 500 },
 		);
 	}
 }

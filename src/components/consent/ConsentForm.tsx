@@ -8,7 +8,6 @@ import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import SignatureCanvas from "react-signature-canvas";
-import { format } from "date-fns";
 import {
 	pdf,
 	Document,
@@ -19,15 +18,24 @@ import {
 	PDFDownloadLink,
 	Image,
 } from "@react-pdf/renderer";
+import { DateField, DateInput, DateSegment } from "react-aria-components";
+import { format, parse } from "date-fns";
+import {
+	CalendarDate,
+	getLocalTimeZone,
+	parseDate,
+	today,
+} from "@internationalized/date";
 
 interface ConsentFormData {
 	participantName: string;
 	signature: string;
-	signatureDate: Date;
+	signatureDate: CalendarDate;
 	isMinor: boolean;
 	parentName?: string;
 	parentSignature?: string;
-	parentDate?: Date;
+	parentDate?: CalendarDate;
+	completed?: boolean;
 }
 
 interface ConsentFormProps {
@@ -48,6 +56,23 @@ const styles = StyleSheet.create({
 	signatureBlock: { marginTop: 20, borderTop: 1, paddingTop: 10 },
 	signatureImage: { width: 200, height: 50, marginTop: 5 },
 });
+
+const toCalendarDate = (date: Date): CalendarDate => {
+	return new CalendarDate(
+		date.getFullYear(),
+		date.getMonth() + 1,
+		date.getDate()
+	);
+};
+
+const toJSDate = (calendarDate: CalendarDate): Date => {
+	return new Date(
+		calendarDate.year,
+		calendarDate.month - 1,
+		calendarDate.day,
+		12
+	);
+};
 
 const FormContent = ({ isMinor = false }: { isMinor: boolean }) => (
 	<div className="space-y-4 text-sm">
@@ -229,7 +254,8 @@ const ConsentContent = ({
 			<Text style={styles.heading}>Questions about this study:</Text>
 			<Text style={styles.text}>
 				If you have any questions about this study, feel free to
-				contact: Lauren Bakale at bakalel@westboroughk12.org
+				contact: Lauren Bakale at bakalel@westboroughk12.org or Daniel
+				Korkin at daniel.d.korkin@gmail.com
 			</Text>
 
 			<Text style={styles.heading}>Voluntary Participation:</Text>
@@ -267,7 +293,7 @@ const ConsentContent = ({
 				)}
 				<Text style={styles.text}>
 					Date Reviewed & Signed:{" "}
-					{format(formData.signatureDate, "MM/dd/yyyy")}
+					{format(toJSDate(formData.signatureDate), "MM/dd/yyyy")}
 				</Text>
 			</View>
 
@@ -288,12 +314,15 @@ const ConsentContent = ({
 							/>
 						</>
 					)}
-					<Text style={styles.text}>
-						Date Reviewed & Signed:{" "}
-						{formData.parentDate
-							? format(formData.parentDate, "MM/dd/yyyy")
-							: ""}
-					</Text>
+					{isMinor && formData.parentDate && (
+						<Text style={styles.text}>
+							Parent Date Reviewed & Signed:{" "}
+							{format(
+								toJSDate(formData.parentDate),
+								"MM/dd/yyyy"
+							)}
+						</Text>
+					)}
 				</View>
 			)}
 		</Page>
@@ -304,11 +333,12 @@ export function ConsentForm({ isMinor, onComplete }: ConsentFormProps) {
 	const [formData, setFormData] = useState<ConsentFormData>({
 		participantName: "",
 		signature: "",
-		signatureDate: new Date(),
-		isMinor,
+		signatureDate: today(getLocalTimeZone()),
+		isMinor: isMinor,
 		parentName: "",
 		parentSignature: "",
-		parentDate: isMinor ? new Date() : undefined,
+		parentDate: isMinor ? today(getLocalTimeZone()) : undefined,
+		completed: false,
 	});
 
 	const participantSigRef = useRef<SignatureCanvas>(null);
@@ -322,18 +352,12 @@ export function ConsentForm({ isMinor, onComplete }: ConsentFormProps) {
 			return;
 		}
 
-		if (isMinor && (!formData.parentName || !parentSigRef.current)) {
-			setError("Please complete all parent/guardian fields");
-			return;
-		}
-
 		try {
-			// Get participant signature
+			// Get signatures
 			const participantSignature = participantSigRef.current
-				.getTrimmedCanvas()
+				?.getTrimmedCanvas()
 				.toDataURL("image/png");
 
-			// Get parent signature if needed
 			let parentSignature;
 			if (isMinor && parentSigRef.current) {
 				parentSignature = parentSigRef.current
@@ -341,18 +365,29 @@ export function ConsentForm({ isMinor, onComplete }: ConsentFormProps) {
 					.toDataURL("image/png");
 			}
 
+			// Convert dates before submitting
 			const updatedData = {
 				...formData,
 				signature: participantSignature,
-				parentSignature: parentSignature,
+				parentSignature,
+				signatureDate: toJSDate(formData.signatureDate),
+				parentDate: formData.parentDate
+					? toJSDate(formData.parentDate)
+					: undefined,
+				completed: true,
 			};
 
-			setFormData(updatedData);
+			setFormData({
+				...updatedData,
+				signatureDate: formData.signatureDate, // Keep CalendarDate for form state
+				parentDate: formData.parentDate, // Keep CalendarDate for form state
+			});
+
 			setCompleted(true);
-			onComplete(updatedData);
+			onComplete(updatedData); // Send converted dates to API
 		} catch (err) {
-			console.error("Signature capture error:", err);
-			setError("Failed to process signatures");
+			console.error("Form submission error:", err);
+			setError("Failed to process form");
 		}
 	};
 
@@ -420,18 +455,21 @@ export function ConsentForm({ isMinor, onComplete }: ConsentFormProps) {
 
 					<div className="space-y-2">
 						<Label>Date Signed *</Label>
-						<Calendar
-							mode="single"
-							selected={formData.signatureDate}
-							onSelect={(date) =>
-								date &&
+						<DateField
+							aria-label="Date signed"
+							value={formData.signatureDate}
+							onChange={(date) =>
 								setFormData({
 									...formData,
 									signatureDate: date,
 								})
 							}
-							disabled={completed}
-						/>
+							isDisabled={completed}
+						>
+							<DateInput className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50">
+								{(segment) => <DateSegment segment={segment} />}
+							</DateInput>
+						</DateField>
 					</div>
 
 					{isMinor && (
@@ -483,18 +521,23 @@ export function ConsentForm({ isMinor, onComplete }: ConsentFormProps) {
 
 							<div className="space-y-2">
 								<Label>Parent/Guardian Date Signed *</Label>
-								<Calendar
-									mode="single"
-									selected={formData.parentDate}
-									onSelect={(date) =>
-										date &&
+								<DateField
+									aria-label="Parent/Guardian date signed"
+									isDisabled={completed}
+									value={formData.parentDate}
+									onChange={(date) =>
 										setFormData({
 											...formData,
 											parentDate: date,
 										})
 									}
-									disabled={completed}
-								/>
+								>
+									<DateInput className="flex h-9 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50">
+										{(segment) => (
+											<DateSegment segment={segment} />
+										)}
+									</DateInput>
+								</DateField>
 							</div>
 						</>
 					)}

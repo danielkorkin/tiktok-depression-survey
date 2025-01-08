@@ -29,8 +29,10 @@ const GuideList: React.FC<GuideListProps> = ({ guides }) => {
 							guide.meta.description
 								.toLowerCase()
 								.includes(lowerQuery) ||
-							guide.meta.author.toLowerCase().includes(lowerQuery)
-					)
+							guide.meta.author
+								.toLowerCase()
+								.includes(lowerQuery),
+					),
 				);
 			}
 		}, 300); // Debounce by 300ms
@@ -61,11 +63,11 @@ const GuideList: React.FC<GuideListProps> = ({ guides }) => {
 						<p className="text-sm text-gray-500 dark:text-gray-400">
 							By {guide.meta.author} | Created at:{" "}
 							{new Date(
-								guide.meta.createdAt
+								guide.meta.createdAt,
 							).toLocaleDateString()}{" "}
 							| Updated at:{" "}
 							{new Date(
-								guide.meta.updatedAt
+								guide.meta.updatedAt,
 							).toLocaleDateString()}
 						</p>
 					</li>

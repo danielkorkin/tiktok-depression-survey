@@ -218,7 +218,7 @@ export default function EligibilityForm({ onSubmit }: EligibilityFormProps) {
 								onChange={(date: CalendarDate | null) => {
 									setDateOfBirth(date);
 									setDateInputValue(
-										date ? date.toString() : ""
+										date ? date.toString() : "",
 									);
 								}}
 							/>

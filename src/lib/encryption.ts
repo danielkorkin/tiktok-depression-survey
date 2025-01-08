@@ -44,7 +44,7 @@ export function encryptWithPublicKey(data: any): string[] {
 					padding: crypto.constants.RSA_PKCS1_OAEP_PADDING,
 					oaepHash: "sha256",
 				},
-				Buffer.from(chunk)
+				Buffer.from(chunk),
 			);
 			return encrypted.toString("base64");
 		});

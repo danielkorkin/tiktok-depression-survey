@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma"; // Change from import { prisma }
 
+// 4. Update API route handler
 export async function POST(request: Request) {
 	try {
 		const body = await request.json();
@@ -9,7 +10,7 @@ export async function POST(request: Request) {
 			data: {
 				participantName: body.participantName,
 				signature: body.signature,
-				signatureDate: new Date(body.signatureDate),
+				signatureDate: new Date(body.signatureDate), // Will now be a valid JS Date
 				isMinor: body.isMinor,
 				parentName: body.parentName,
 				parentSignature: body.parentSignature,
@@ -23,7 +24,7 @@ export async function POST(request: Request) {
 		console.error("Error saving consent form:", error);
 		return NextResponse.json(
 			{ error: "Failed to save consent form" },
-			{ status: 500 }
+			{ status: 500 },
 		);
 	}
 }
