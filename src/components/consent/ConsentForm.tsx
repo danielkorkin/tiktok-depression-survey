@@ -376,17 +376,29 @@ export function ConsentForm({ isMinor, onComplete }: ConsentFormProps) {
 					.toDataURL("image/png");
 			}
 
-			// Create updated form data keeping CalendarDate types
-			const updatedData: ConsentFormData = {
+			// Create API submission data with converted dates
+			const apiData = {
+				...formData,
+				signature: participantSignature,
+				parentSignature,
+				signatureDate: toJSDate(formData.signatureDate),
+				parentDate: formData.parentDate
+					? toJSDate(formData.parentDate)
+					: undefined,
+				completed: true,
+			};
+
+			// Keep CalendarDate for form state
+			const updatedFormData: ConsentFormData = {
 				...formData,
 				signature: participantSignature,
 				parentSignature,
 				completed: true,
 			};
 
-			setFormData(updatedData);
+			setFormData(updatedFormData);
 			setCompleted(true);
-			onComplete(updatedData); // Pass data with CalendarDate types
+			onComplete(apiData); // Pass converted dates to API
 		} catch (err) {
 			console.error("Form submission error:", err);
 			setError("Failed to process form");
@@ -559,7 +571,6 @@ export function ConsentForm({ isMinor, onComplete }: ConsentFormProps) {
 							}
 							fileName="consent-form.pdf"
 						>
-							
 							{/*@ts-expect-error*/}
 							{({
 								blob,
