@@ -18,9 +18,9 @@ This study aims to explore how **TikTok video data** and **PHQ-9 scores** can be
 
 ## Research Team
 
--   **Daniel Korkin**
--   **Ayan Kataria**
--   **Vikram Hiranandani**
+- **Daniel Korkin**
+- **Ayan Kataria**
+- **Vikram Hiranandani**
 
 ## Procedure
 
@@ -34,22 +34,22 @@ The AI model will analyze linguistic, visual, and behavioral patterns in the Tik
 
 ## Confidentiality
 
--   All data will be **anonymized** before submission.
--   Personal identifiers will be stripped from the TikTok data.
--   PHQ-9 scores will be linked to TikTok data only as anonymized datasets.
+- All data will be **anonymized** before submission.
+- Personal identifiers will be stripped from the TikTok data.
+- PHQ-9 scores will be linked to TikTok data only as anonymized datasets.
 
 ## Risks and Benefits
 
 ### Risks:
 
--   **Minimal risk** as all data is anonymized before leaving the participant’s device.
+- **Minimal risk** as all data is anonymized before leaving the participant’s device.
 
 ### Benefits:
 
--   Contribution to mental health research.
--   Potential to improve early screening tools for depression.
+- Contribution to mental health research.
+- Potential to improve early screening tools for depression.
 
 ## Voluntary Participation
 
--   Participation is completely **voluntary**.
--   Participants can **withdraw at any time** without consequences.
+- Participation is completely **voluntary**.
+- Participants can **withdraw at any time** without consequences.

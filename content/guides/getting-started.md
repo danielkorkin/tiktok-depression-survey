@@ -15,8 +15,8 @@ updatedAt: "2024-12-14"
 
 ## Step 2: Receive Your Login Key
 
--   Once eligibility is confirmed, you will receive a **login key**.
--   Use this key to log in to the platform.
+- Once eligibility is confirmed, you will receive a **login key**.
+- Use this key to log in to the platform.
 
 ## Step 3: Complete the Forms
 
@@ -31,9 +31,9 @@ updatedAt: "2024-12-14"
 
 ## Step 4: Agree to the Terms of Service
 
--   Read and agree to the **Terms of Service** before proceeding.
+- Read and agree to the **Terms of Service** before proceeding.
 
 ## Step 5: Submit Your Data
 
--   Once all forms are complete, submit your **PHQ-9 scores**, **TikTok data**, and **consent form**.
--   All data will be **encrypted and anonymized** for privacy.
+- Once all forms are complete, submit your **PHQ-9 scores**, **TikTok data**, and **consent form**.
+- All data will be **encrypted and anonymized** for privacy.

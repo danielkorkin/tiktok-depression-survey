@@ -62,7 +62,7 @@ const toCalendarDate = (date: Date): CalendarDate => {
 	return new CalendarDate(
 		date.getFullYear(),
 		date.getMonth() + 1,
-		date.getDate()
+		date.getDate(),
 	);
 };
 
@@ -71,7 +71,7 @@ const toJSDate = (calendarDate: CalendarDate): Date => {
 		calendarDate.year,
 		calendarDate.month - 1,
 		calendarDate.day,
-		12
+		12,
 	);
 };
 
@@ -330,7 +330,7 @@ const ConsentContent = ({
 							Parent Date Reviewed & Signed:{" "}
 							{format(
 								toJSDate(formData.parentDate),
-								"MM/dd/yyyy"
+								"MM/dd/yyyy",
 							)}
 						</Text>
 					)}
