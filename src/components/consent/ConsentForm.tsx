@@ -75,16 +75,16 @@ const toJSDate = (calendarDate: CalendarDate): Date => {
 };
 
 const FormContent = ({ isMinor = false }: { isMinor: boolean }) => (
-	<div className="space-y-4 text-sm">
-		<h3 className="font-bold">
+	<div className="space-y-4 text-sm dark:text-gray-200">
+		<h3 className="font-bold dark:text-white">
 			Student Researchers: Daniel Korkin, Ayan Kataria, Vikram Hiranandani
 		</h3>
-		<h3 className="font-bold">
+		<h3 className="font-bold dark:text-white">
 			Title of Project: Leveraging Social Media Data and AI to Predict
 			Risk of Depression Using TikTok Algorithms
 		</h3>
 
-		<p>
+		<p className="dark:text-gray-300">
 			I am asking for your voluntary participation in my science fair
 			project. Please read the following information about the project. If
 			you would like to participate, please sign in the appropriate area
@@ -92,26 +92,30 @@ const FormContent = ({ isMinor = false }: { isMinor: boolean }) => (
 		</p>
 
 		<div className="space-y-2">
-			<h4 className="font-semibold">Purpose of the project:</h4>
-			<p>
+			<h4 className="font-semibold dark:text-white">
+				Purpose of the project:
+			</h4>
+			<p className="dark:text-gray-300">
 				The purpose of this project is to explore how TikTok video data
 				and PHQ-9 scores can be used to train an AI.
 			</p>
 		</div>
 
 		<div className="space-y-2">
-			<h4 className="font-semibold">
+			<h4 className="font-semibold dark:text-white">
 				If you participate, you will be asked to:
 			</h4>
-			<p>
+			<p className="dark:text-gray-300">
 				Submit your PHQ-9 score, TikTok data downloaded from your
 				settings, and a signed Informed Consent form.
 			</p>
 		</div>
 
 		<div className="space-y-2">
-			<h4 className="font-semibold">Time required for participation:</h4>
-			<p>
+			<h4 className="font-semibold dark:text-white">
+				Time required for participation:
+			</h4>
+			<p className="dark:text-gray-300">
 				Completing the online form will take minimal time, but
 				downloading TikTok data may take additional time depending on
 				TikTok&apos;s response, and filling out the PHQ-9 form should
@@ -120,8 +124,10 @@ const FormContent = ({ isMinor = false }: { isMinor: boolean }) => (
 		</div>
 
 		<div className="space-y-2">
-			<h4 className="font-semibold">Potential Risks of Study:</h4>
-			<p>
+			<h4 className="font-semibold dark:text-white">
+				Potential Risks of Study:
+			</h4>
+			<p className="dark:text-gray-300">
 				There is minimal risk, but TikTok data may contain sensitive
 				information. However, all data is anonymized, and sensitive data
 				is stripped before leaving your computer.
@@ -129,8 +135,8 @@ const FormContent = ({ isMinor = false }: { isMinor: boolean }) => (
 		</div>
 
 		<div className="space-y-2">
-			<h4 className="font-semibold">Benefits:</h4>
-			<p>
+			<h4 className="font-semibold dark:text-white">Benefits:</h4>
+			<p className="dark:text-gray-300">
 				This study could contribute to the understanding of how social
 				media can be used for early depression screening, potentially
 				helping others in the future.
@@ -138,10 +144,10 @@ const FormContent = ({ isMinor = false }: { isMinor: boolean }) => (
 		</div>
 
 		<div className="space-y-2">
-			<h4 className="font-semibold">
+			<h4 className="font-semibold dark:text-white">
 				How confidentiality will be maintained:
 			</h4>
-			<p>
+			<p className="dark:text-gray-300">
 				All personal information and PHQ-9 scores are submitted
 				separately. TikTok data is anonymized, with sensitive
 				information stripped before submission. TikTok video data and
@@ -152,16 +158,20 @@ const FormContent = ({ isMinor = false }: { isMinor: boolean }) => (
 		</div>
 
 		<div className="space-y-2">
-			<h4 className="font-semibold">Questions about this study:</h4>
-			<p>
+			<h4 className="font-semibold dark:text-white">
+				Questions about this study:
+			</h4>
+			<p className="dark:text-gray-300">
 				If you have any questions about this study, feel free to
 				contact: Lauren Bakale at bakalel@westboroughk12.org
 			</p>
 		</div>
 
 		<div className="space-y-2">
-			<h4 className="font-semibold">Voluntary Participation:</h4>
-			<p>
+			<h4 className="font-semibold dark:text-white">
+				Voluntary Participation:
+			</h4>
+			<p className="dark:text-gray-300">
 				Participation in this study is completely voluntary. If you
 				decide not to participate there will not be negative
 				consequences. Please be aware that if you decide to participate,
@@ -170,7 +180,7 @@ const FormContent = ({ isMinor = false }: { isMinor: boolean }) => (
 			</p>
 		</div>
 
-		<p className="font-semibold mt-4">
+		<p className="font-semibold mt-4 dark:text-white">
 			By signing this form I am attesting that I have read and understand
 			the information above and I freely give my consent/assent to
 			participate or permission for my child to participate.
