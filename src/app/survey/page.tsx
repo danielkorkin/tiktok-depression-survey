@@ -54,6 +54,8 @@ function SurveyPageContent() {
 	const [error, setError] = useState<string | null>(null);
 	const [phq9, setPhq9] = useState<number[]>(Array(9).fill(0));
 	const [videoList, setVideoList] = useState<any[] | null>(null);
+	const [age, setAge] = useState<number | "">("");
+	const [gender, setGender] = useState<string>("");
 	const [agreedTerms, setAgreedTerms] = useState<boolean>(false);
 	const [agreedExtra, setAgreedExtra] = useState<boolean>(false);
 	const [submitting, setSubmitting] = useState<boolean>(false);
@@ -146,6 +148,8 @@ function SurveyPageContent() {
 				body: JSON.stringify({
 					userKey,
 					phq9Score,
+					age,
+					gender,
 					videoList,
 					agreedTerms,
 					agreedExtra: user?.isOver18 ? null : agreedExtra,
@@ -344,6 +348,57 @@ function SurveyPageContent() {
 							{fieldErrors.videoList && (
 								<p className="text-red-500 text-sm">
 									{fieldErrors.videoList}
+								</p>
+							)}
+						</div>
+
+						<div className="space-y-2">
+							<Label htmlFor="age">Age *</Label>
+							<Input
+								id="age"
+								type="number"
+								min="13"
+								max="100"
+								value={age}
+								onChange={(e) =>
+									setAge(parseInt(e.target.value) || "")
+								}
+								className={
+									fieldErrors.age ? "border-red-500" : ""
+								}
+								required
+							/>
+							{fieldErrors.age && (
+								<p className="text-red-500 text-sm">
+									{fieldErrors.age}
+								</p>
+							)}
+						</div>
+
+						<div className="space-y-2">
+							<Label htmlFor="gender">Gender *</Label>
+							<Select onValueChange={setGender} value={gender}>
+								<SelectTrigger
+									id="gender"
+									className={
+										fieldErrors.gender
+											? "border-red-500"
+											: ""
+									}
+								>
+									<SelectValue placeholder="Select gender" />
+								</SelectTrigger>
+								<SelectContent>
+									<SelectItem value="male">Male</SelectItem>
+									<SelectItem value="female">
+										Female
+									</SelectItem>
+									<SelectItem value="other">Other</SelectItem>
+								</SelectContent>
+							</Select>
+							{fieldErrors.gender && (
+								<p className="text-red-500 text-sm">
+									{fieldErrors.gender}
 								</p>
 							)}
 						</div>

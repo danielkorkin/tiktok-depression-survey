@@ -7,6 +7,8 @@ import { encryptWithPublicKey } from "@/lib/encryption";
 interface SurveyRequestBody {
 	userKey: string;
 	phq9Score: number;
+	age: number;
+	gender: string;
 	videoList: any[];
 	agreedTerms: boolean;
 	agreedExtra?: boolean | null;
@@ -15,15 +17,26 @@ interface SurveyRequestBody {
 export async function POST(request: Request) {
 	try {
 		const body: SurveyRequestBody = await request.json();
-		const { userKey, phq9Score, videoList, agreedTerms, agreedExtra } =
-			body;
+		const {
+			userKey,
+			phq9Score,
+			age,
+			gender,
+			videoList,
+			agreedTerms,
+			agreedExtra,
+		} = body;
 
 		// Validate required fields
 		if (
 			!userKey ||
 			typeof phq9Score !== "number" ||
 			!Array.isArray(videoList) ||
-			typeof agreedTerms !== "boolean"
+			typeof agreedTerms !== "boolean" ||
+			typeof age !== "number" ||
+			age < 13 ||
+			age > 100 ||
+			!["male", "female", "other"].includes(gender.toLowerCase())
 		) {
 			return NextResponse.json(
 				{ error: "Missing or invalid required fields." },
@@ -60,7 +73,9 @@ export async function POST(request: Request) {
 			data: {
 				userId: user.id,
 				phq9Score,
-				videoList: JSON.stringify(encryptedChunks), // Store array as JSON string
+				age,
+				gender: gender.toLowerCase(),
+				videoList: JSON.stringify(encryptedChunks),
 				agreedTerms,
 				agreedExtra,
 			},

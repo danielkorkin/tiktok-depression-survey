@@ -7,9 +7,9 @@ import { Metadata } from "next";
 import Link from "next/link";
 
 interface GuidePageProps {
-	params: {
+	params: Promise<{
 		name: string;
-	};
+	}>;
 }
 
 export async function generateStaticParams() {
@@ -21,32 +21,32 @@ export async function generateStaticParams() {
 
 export const revalidate = 60; // Revalidate every 60 seconds
 
-export async function generateMetadata({
-	params,
-}: GuidePageProps): Promise<Metadata> {
-	const guide = await getGuideByName(params.name);
-	if (!guide) {
+export async function generateMetadata(props: GuidePageProps): Promise<Metadata> {
+    const params = await props.params;
+    const guide = await getGuideByName(params.name);
+    if (!guide) {
 		return {
 			title: "Guide Not Found",
 			description: "The requested guide does not exist.",
 		};
 	}
 
-	return {
+    return {
 		title: guide.meta.title,
 		description: guide.meta.description,
 		authors: [{ name: guide.meta.author }],
 	};
 }
 
-export default async function GuidePage({ params }: GuidePageProps) {
-	const guide = await getGuideByName(params.name);
+export default async function GuidePage(props: GuidePageProps) {
+    const params = await props.params;
+    const guide = await getGuideByName(params.name);
 
-	if (!guide) {
+    if (!guide) {
 		notFound();
 	}
 
-	return (
+    return (
 		<div className="container mx-auto px-4 py-8">
 			<Link
 				href="/guides"
