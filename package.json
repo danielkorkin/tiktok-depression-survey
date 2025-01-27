@@ -21,6 +21,7 @@
 		"@radix-ui/react-select": "^2.1.2",
 		"@radix-ui/react-slot": "^1.1.0",
 		"@react-pdf/renderer": "^3.4.4",
+		"@sentry/nextjs": "^8.51.0",
 		"@tabler/icons-react": "^3.22.0",
 		"@types/canvas-confetti": "^1.6.4",
 		"add": "^2.0.6",
