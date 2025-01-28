@@ -333,18 +333,26 @@ function SurveyPageContent() {
 							<Label htmlFor="videoList">
 								Upload VideoList JSON *
 							</Label>
-							<Input
-								id="videoList"
-								type="file"
-								accept=".json"
-								onChange={handleFileUpload}
-								required
-								className={
-									fieldErrors.videoList
-										? "border-red-500"
-										: ""
-								}
-							/>
+							<div>
+								<Input
+									id="videoList"
+									type="file"
+									accept=".json"
+									onChange={handleFileUpload}
+									required
+									className={
+										fieldErrors.videoList
+											? "border-red-500"
+											: ""
+									}
+								/>
+								<a 
+									href="/guide/how-to-download-tiktok-data"
+									className="text-primary text-sm hover:underline mt-1 block"
+								>
+									How to download your TikTok data
+								</a>
+							</div>
 							{fieldErrors.videoList && (
 								<p className="text-red-500 text-sm">
 									{fieldErrors.videoList}
