@@ -1,11 +1,14 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 
-export async function GET(request: Request, props: { params: Promise<{ userKey: string }> }) {
-    const params = await props.params;
-    const { userKey } = params;
+export async function GET(
+	request: Request,
+	props: { params: Promise<{ userKey: string }> },
+) {
+	const params = await props.params;
+	const { userKey } = params;
 
-    try {
+	try {
 		const user = await prisma.user.findUnique({
 			where: { userKey },
 			include: { survey: true },
