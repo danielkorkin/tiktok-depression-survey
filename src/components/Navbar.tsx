@@ -27,6 +27,22 @@ export default function Navbar() {
 								Guides
 							</Link>
 						</div>
+						<div className="hidden sm:ml-6 sm:flex sm:space-x-8">
+							<Link
+								href="/participate"
+								className="inline-flex items-center px-1 pt-1 text-sm font-medium"
+							>
+								Participate
+							</Link>
+						</div>
+						<div className="hidden sm:ml-6 sm:flex sm:space-x-8">
+							<Link
+								href="/login"
+								className="inline-flex items-center px-1 pt-1 text-sm font-medium"
+							>
+								Login
+							</Link>
+						</div>
 					</div>
 					<div className="flex items-center">
 						<Button

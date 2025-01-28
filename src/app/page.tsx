@@ -92,10 +92,10 @@ export default function Home() {
 							</AccordionItem>
 						</Accordion>
 						<Link
-							href="/faq"
+							href="/guides"
 							className="text-primary hover:underline text-lg"
 						>
-							View all FAQs
+							View more about FAQs
 						</Link>
 					</div>
 				</section>
