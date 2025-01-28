@@ -47,6 +47,17 @@ interface UserData {
 	isOver18: boolean | null;
 }
 
+interface TikTokData {
+	Activity: {
+		"Video Browsing History"?: {
+			VideoList?: Array<{
+				Date: string;
+				Link: string;
+			}>;
+		};
+	};
+}
+
 function SurveyPageContent() {
 	const searchParams = useSearchParams();
 	const router = useRouter();
@@ -193,28 +204,66 @@ function SurveyPageContent() {
 
 	const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const file = e.target.files && e.target.files[0];
-		if (file) {
-			const reader = new FileReader();
-			reader.onload = (event) => {
-				try {
-					const json = JSON.parse(event.target?.result as string);
-					const extractedVideoList =
-						json?.Activity?.["Video Browsing History"]?.VideoList;
-					if (Array.isArray(extractedVideoList)) {
-						setVideoList(extractedVideoList);
-					} else {
-						throw new Error(
-							"VideoList is not found or is not an array.",
-						);
-					}
-				} catch (err) {
-					setError(
-						"Invalid JSON structure. Unable to extract VideoList.",
-					);
-				}
-			};
-			reader.readAsText(file);
+		if (!file) {
+			setError("Please select a file");
+			return;
 		}
+
+		const reader = new FileReader();
+		reader.onload = (event) => {
+			try {
+				if (!event.target?.result) {
+					throw new Error("Failed to read file");
+				}
+
+				const parsedData: TikTokData = JSON.parse(
+					event.target.result as string
+				);
+
+				// Add validation checks
+				if (!parsedData?.Activity?.["Video Browsing History"]) {
+					throw new Error("Missing Video Browsing History in data");
+				}
+
+				const extractedVideoList =
+					parsedData.Activity["Video Browsing History"].VideoList;
+
+				if (!Array.isArray(extractedVideoList)) {
+					throw new Error("VideoList is not an array");
+				}
+
+				if (extractedVideoList.length === 0) {
+					throw new Error("VideoList is empty");
+				}
+
+				// Validate video list structure
+				const isValidVideoList = extractedVideoList.every(
+					(video) =>
+						typeof video === "object" &&
+						typeof video.Date === "string" &&
+						typeof video.Link === "string"
+				);
+
+				if (!isValidVideoList) {
+					throw new Error("Invalid video data structure");
+				}
+
+				setVideoList(extractedVideoList);
+				setError(null);
+			} catch (err) {
+				const errorMessage =
+					err instanceof Error ? err.message : "Failed to parse file";
+				setError(`Invalid file format: ${errorMessage}`);
+				setVideoList(null);
+			}
+		};
+
+		reader.onerror = () => {
+			setError("Error reading file");
+			setVideoList(null);
+		};
+
+		reader.readAsText(file);
 	};
 
 	const handleConsentComplete = async (formData: ConsentFormData) => {
