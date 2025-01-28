@@ -25,6 +25,9 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Loader2 } from "lucide-react";
 import { ConfettiButton } from "@/components/ui/confetti";
 import { ConsentForm, ConsentFormData } from "@/components/consent/ConsentForm";
+import { DateField, DateInput, DateSegment } from "react-aria-components";
+import TimezoneSelect from "react-timezone-select";
+import { CalendarDate, today, getLocalTimeZone } from "@internationalized/date";
 
 const PHQ9Questions = [
 	"Little interest or pleasure in doing things",
@@ -54,6 +57,12 @@ function SurveyPageContent() {
 	const [error, setError] = useState<string | null>(null);
 	const [phq9, setPhq9] = useState<number[]>(Array(9).fill(0));
 	const [videoList, setVideoList] = useState<any[] | null>(null);
+	const [requestDate, setRequestDate] = useState<CalendarDate>(
+		today(getLocalTimeZone()),
+	);
+	const [timezone, setTimezone] = useState(
+		Intl.DateTimeFormat().resolvedOptions().timeZone,
+	);
 	const [age, setAge] = useState<number | "">("");
 	const [gender, setGender] = useState<string>("");
 	const [agreedTerms, setAgreedTerms] = useState<boolean>(false);
@@ -102,12 +111,14 @@ function SurveyPageContent() {
 		setError(null);
 		setFieldErrors({});
 
+		// Form validation
 		const errors = validateForm();
 		if (Object.keys(errors).length > 0) {
 			setFieldErrors(errors);
 			return;
 		}
 
+		// Pre-submission validation checks
 		if (!userKey) {
 			setError("Invalid user key.");
 			return;
@@ -118,6 +129,16 @@ function SurveyPageContent() {
 			return;
 		}
 
+		if (!requestDate) {
+			setError("Please select when you requested your TikTok data");
+			return;
+		}
+
+		if (!timezone) {
+			setError("Please select your primary TikTok viewing timezone");
+			return;
+		}
+
 		if (!agreedTerms) {
 			setError("You must agree to the terms and conditions.");
 			return;
@@ -125,7 +146,7 @@ function SurveyPageContent() {
 
 		if (user?.isOver18 === false && !agreedExtra) {
 			setError(
-				"You must agree to the additional terms for users under 18.",
+				"You must agree to the additional terms for users under 18."
 			);
 			return;
 		}
@@ -142,9 +163,7 @@ function SurveyPageContent() {
 		try {
 			const res = await fetch("/api/surveys", {
 				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-				},
+				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({
 					userKey,
 					phq9Score,
@@ -153,6 +172,8 @@ function SurveyPageContent() {
 					videoList,
 					agreedTerms,
 					agreedExtra: user?.isOver18 ? null : agreedExtra,
+					requestDate: requestDate.toString(), // Add new fields
+					timezone,
 				}),
 			});
 
@@ -214,25 +235,55 @@ function SurveyPageContent() {
 	const validateForm = (): { [key: string]: string } => {
 		const errors: { [key: string]: string } = {};
 
+		// Consent validation
 		if (!consentCompleted) {
 			errors.consent = "Please complete the consent form";
 		}
 
+		// PHQ9 validation
 		phq9.forEach((score, index) => {
 			if (score < 0 || score > 3) {
 				errors[`phq9-${index}`] = "Please select an option";
 			}
 		});
 
+		// VideoList validation
 		if (!videoList || !Array.isArray(videoList) || videoList.length === 0) {
 			errors.videoList =
 				"Please upload a valid TikTok VideoList JSON file";
 		}
 
+		// Date validation
+		if (!requestDate) {
+			errors.requestDate =
+				"Please select when you requested your TikTok data";
+		}
+
+		// Timezone validation
+		if (!timezone) {
+			errors.timezone =
+				"Please select your primary TikTok viewing timezone";
+		}
+
+		// Age validation
+		if (!age || typeof age !== "number" || age < 13 || age > 100) {
+			errors.age = "Please enter a valid age between 13 and 100";
+		}
+
+		// Gender validation
+		if (
+			!gender ||
+			!["male", "female", "other"].includes(gender.toLowerCase())
+		) {
+			errors.gender = "Please select your gender";
+		}
+
+		// Terms agreement validation
 		if (!agreedTerms) {
 			errors.terms = "Please agree to the terms and conditions";
 		}
 
+		// Extra terms for minors
 		if (user?.isOver18 === false && !agreedExtra) {
 			errors.extraTerms =
 				"Please agree to the additional terms for users under 18";
@@ -240,6 +291,7 @@ function SurveyPageContent() {
 
 		return errors;
 	};
+
 
 	if (loading) {
 		return (
@@ -346,7 +398,7 @@ function SurveyPageContent() {
 											: ""
 									}
 								/>
-								<a 
+								<a
 									href="/guide/how-to-download-tiktok-data"
 									className="text-primary text-sm hover:underline mt-1 block"
 								>
@@ -356,6 +408,51 @@ function SurveyPageContent() {
 							{fieldErrors.videoList && (
 								<p className="text-red-500 text-sm">
 									{fieldErrors.videoList}
+								</p>
+							)}
+						</div>
+
+						<div className="space-y-2">
+							<Label htmlFor="requestDate">
+								When did you request your TikTok data? *
+							</Label>
+							<DateField
+								aria-label="Data request date"
+								value={requestDate}
+								onChange={(date: CalendarDate | null) =>
+									setRequestDate(
+										date || today(getLocalTimeZone()),
+									)
+								}
+							>
+								<DateInput className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50">
+									{(segment) => (
+										<DateSegment segment={segment} />
+									)}
+								</DateInput>
+							</DateField>
+							{fieldErrors.requestDate && (
+								<p className="text-red-500 text-sm">
+									{fieldErrors.requestDate}
+								</p>
+							)}
+						</div>
+
+						<div className="space-y-2">
+							<Label htmlFor="timezone">
+								Your primary TikTok viewing timezone *
+							</Label>
+							<TimezoneSelect
+								id="timezone"
+								value={timezone}
+								onChange={(tz) => setTimezone(tz.value)}
+								className={
+									fieldErrors.timezone ? "border-red-500" : ""
+								}
+							/>
+							{fieldErrors.timezone && (
+								<p className="text-red-500 text-sm">
+									{fieldErrors.timezone}
 								</p>
 							)}
 						</div>

@@ -12,6 +12,8 @@ interface SurveyRequestBody {
 	videoList: any[];
 	agreedTerms: boolean;
 	agreedExtra?: boolean | null;
+	requestDate: string; // Add new field
+	timezone: string; // Add new field
 }
 
 export async function POST(request: Request) {
@@ -25,6 +27,8 @@ export async function POST(request: Request) {
 			videoList,
 			agreedTerms,
 			agreedExtra,
+			requestDate,
+			timezone,
 		} = body;
 
 		// Validate required fields
@@ -78,6 +82,8 @@ export async function POST(request: Request) {
 				videoList: JSON.stringify(encryptedChunks),
 				agreedTerms,
 				agreedExtra,
+				requestDate: new Date(requestDate), // Convert string to Date
+				timezone,
 			},
 		});
 

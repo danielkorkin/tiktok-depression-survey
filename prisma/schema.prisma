@@ -25,16 +25,18 @@ model User {
 }
 
 model Survey {
-  id          Int      @id @default(autoincrement())
-  phq9Score   Int
-  age         Int
-  gender      String   // Will store "male", "female", or "other"
-  videoList   String
-  agreedTerms Boolean
-  agreedExtra Boolean?
-  user        User     @relation(fields: [userId], references: [id])
-  userId      Int      @unique
-  submittedAt DateTime @default(now())
+  id           Int      @id @default(autoincrement())
+  phq9Score    Int
+  age          Int
+  gender       String
+  videoList    String
+  agreedTerms  Boolean
+  agreedExtra  Boolean?
+  requestDate  DateTime // Add this field
+  timezone     String   // Add this field
+  userId       Int      @unique
+  user         User     @relation(fields: [userId], references: [id])
+  submittedAt  DateTime @default(now())
 }
 
 model ConsentForm {
