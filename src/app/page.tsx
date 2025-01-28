@@ -130,7 +130,7 @@ export default function Home() {
 							this study publicly available.
 						</p>
 						<Link
-							href="/source-code"
+							href="https://github.com/danielkorkin/tiktok-depression-survey"
 							className="text-primary hover:underline text-lg"
 						>
 							View the source code on GitHub

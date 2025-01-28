@@ -10,15 +10,15 @@ export default function Footer() {
 				>
 					<div className="px-5 py-2">
 						<Link
-							href="/legal"
+							href="/tos"
 							className="text-base text-gray-500 hover:text-gray-900 dark:hover:text-gray-100"
 						>
-							Legal
+							Terms of Service
 						</Link>
 					</div>
 					<div className="px-5 py-2">
 						<Link
-							href="/source-code"
+							href="https://github.com/danielkorkin/tiktok-depression-survey"
 							className="text-base text-gray-500 hover:text-gray-900 dark:hover:text-gray-100"
 						>
 							Source Code
@@ -26,15 +26,15 @@ export default function Footer() {
 					</div>
 					<div className="px-5 py-2">
 						<Link
-							href="/contact"
+							href="mailto:daniel.d.korkin@gmail.com"
 							className="text-base text-gray-500 hover:text-gray-900 dark:hover:text-gray-100"
 						>
-							Contact
+							Contact Us
 						</Link>
 					</div>
 				</nav>
 				<p className="mt-8 text-center text-base text-gray-400">
-					© 2024 TikTok and Mental Health Study. All rights reserved.
+					© 2024-2025 TikTok and Mental Health Study. All rights reserved.
 				</p>
 			</div>
 		</footer>
