@@ -78,7 +78,7 @@ const toJSDate = (calendarDate: CalendarDate): Date => {
 const FormContent = ({ isMinor = false }: { isMinor: boolean }) => (
 	<div className="space-y-4 text-sm dark:text-gray-200">
 		<h3 className="font-bold dark:text-white">
-			Student Researchers: Daniel Korkin, Ayan Kataria, Vikram Hiranandani
+			Student Researchers: Daniel Korkin, Vikram Hiranandani
 		</h3>
 		<h3 className="font-bold dark:text-white">
 			Title of Project: Leveraging Social Media Data and AI to Predict
@@ -199,7 +199,7 @@ const ConsentContent = ({
 	<Document>
 		<Page size="A4" style={styles.page}>
 			<Text style={styles.title}>
-				Student Researchers: Daniel Korkin, Ayan Kataria, Vikram
+				Student Researchers: Daniel Korkin, Vikram
 				Hiranandani
 			</Text>
 			<Text style={styles.title}>

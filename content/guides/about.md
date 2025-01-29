@@ -19,7 +19,6 @@ This study aims to explore how **TikTok video data** and **PHQ-9 scores** can be
 ## Research Team
 
 - **Daniel Korkin**
-- **Ayan Kataria**
 - **Vikram Hiranandani**
 
 ## Procedure
