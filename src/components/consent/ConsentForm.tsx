@@ -412,7 +412,12 @@ export function ConsentForm({ isMinor, onComplete }: ConsentFormProps) {
 	return (
 		<Card className="w-full max-w-2xl mx-auto">
 			<CardHeader>
-				<CardTitle>Informed Consent Form</CardTitle>
+				<>
+					<CardTitle>Informed Consent Form</CardTitle>
+					<p className="text-sm text-muted-foreground mt-2">
+						Note: This consent form is stored separately and not linked to your TikTok data or PHQ-9 responses.
+					</p>
+				</>
 			</CardHeader>
 			<CardContent className="space-y-6">
 				{error && (
