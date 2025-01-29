@@ -21,14 +21,6 @@ export default function Navbar() {
 						</Link>
 						<div className="hidden sm:ml-6 sm:flex sm:space-x-8">
 							<Link
-								href="/guides"
-								className="inline-flex items-center px-1 pt-1 text-sm font-medium"
-							>
-								Guides
-							</Link>
-						</div>
-						<div className="hidden sm:ml-6 sm:flex sm:space-x-8">
-							<Link
 								href="/participate"
 								className="inline-flex items-center px-1 pt-1 text-sm font-medium"
 							>
@@ -41,6 +33,14 @@ export default function Navbar() {
 								className="inline-flex items-center px-1 pt-1 text-sm font-medium"
 							>
 								Login
+							</Link>
+						</div>
+						<div className="hidden sm:ml-6 sm:flex sm:space-x-8">
+							<Link
+								href="/guides"
+								className="inline-flex items-center px-1 pt-1 text-sm font-medium"
+							>
+								Guides
 							</Link>
 						</div>
 					</div>

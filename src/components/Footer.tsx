@@ -18,6 +18,14 @@ export default function Footer() {
 					</div>
 					<div className="px-5 py-2">
 						<Link
+							href="/privacy"
+							className="text-base text-gray-500 hover:text-gray-900 dark:hover:text-gray-100"
+						>
+							Privacy Policy
+						</Link>
+					</div>
+					<div className="px-5 py-2">
+						<Link
 							href="https://github.com/danielkorkin/tiktok-depression-survey"
 							className="text-base text-gray-500 hover:text-gray-900 dark:hover:text-gray-100"
 						>
