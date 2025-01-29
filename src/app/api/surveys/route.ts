@@ -47,6 +47,17 @@ export async function POST(request: Request) {
 			);
 		}
 
+		const user = await prisma.user.findUnique({
+			where: { userKey: body.userKey },
+		});
+
+		if (!user) {
+			return NextResponse.json(
+				{ error: "User not found." },
+				{ status: 404 },
+			);
+		}
+
 		// Encrypt both lists
 		const encryptedVideoList = encryptWithPublicKey(videoList);
 		const encryptedLikedList = encryptWithPublicKey(likedList);
