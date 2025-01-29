@@ -41,7 +41,7 @@ model Survey {
 }
 
 model ConsentForm {
-  id              Int       @id @default(autoincrement())
+  id              String    @id @default(cuid())
   participantName String
   signature       String // Store signature as SVG string
   signatureDate   DateTime
