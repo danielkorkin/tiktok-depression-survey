@@ -26,7 +26,7 @@ import { Loader2 } from "lucide-react";
 import { ConfettiButton } from "@/components/ui/confetti";
 import { ConsentForm, ConsentFormData } from "@/components/consent/ConsentForm";
 import { DateField, DateInput, DateSegment } from "react-aria-components";
-import TimezoneSelect from "react-timezone-select";
+import TimezoneSelect from "@/components/ui/timezone-select";
 import { CalendarDate, today, getLocalTimeZone } from "@internationalized/date";
 
 const PHQ9Questions = [
