@@ -164,7 +164,7 @@ const FormContent = ({ isMinor = false }: { isMinor: boolean }) => (
 			</h4>
 			<p className="dark:text-gray-300">
 				If you have any questions about this study, feel free to
-				contact: Lauren Bakale at bakalel@westboroughk12.org
+				contact: Daniel Korkin at daniel.d.korkin@gmail.com
 			</p>
 		</div>
 
@@ -265,8 +265,7 @@ const ConsentContent = ({
 			<Text style={styles.heading}>Questions about this study:</Text>
 			<Text style={styles.text}>
 				If you have any questions about this study, feel free to
-				contact: Lauren Bakale at bakalel@westboroughk12.org or Daniel
-				Korkin at daniel.d.korkin@gmail.com
+				contact: Daniel Korkin at daniel.d.korkin@gmail.com
 			</Text>
 
 			<Text style={styles.heading}>Voluntary Participation:</Text>

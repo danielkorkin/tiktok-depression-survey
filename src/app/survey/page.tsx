@@ -157,7 +157,7 @@ function SurveyPageContent() {
 
 		if (user?.isOver18 === false && !agreedExtra) {
 			setError(
-				"You must agree to the additional terms for users under 18."
+				"You must agree to the additional terms for users under 18.",
 			);
 			return;
 		}
@@ -217,7 +217,7 @@ function SurveyPageContent() {
 				}
 
 				const parsedData: TikTokData = JSON.parse(
-					event.target.result as string
+					event.target.result as string,
 				);
 
 				// Add validation checks
@@ -241,7 +241,7 @@ function SurveyPageContent() {
 					(video) =>
 						typeof video === "object" &&
 						typeof video.Date === "string" &&
-						typeof video.Link === "string"
+						typeof video.Link === "string",
 				);
 
 				if (!isValidVideoList) {
@@ -340,7 +340,6 @@ function SurveyPageContent() {
 
 		return errors;
 	};
-
 
 	if (loading) {
 		return (
