@@ -24,9 +24,10 @@ Follow these instructions to request and download your TikTok data securely.
 6. Tap **Download your data**.
 7. Ensure you are on the **Request Data** tab.
 8. Under **Select data to download**, choose **All data**.
-9. For **Select file format**, choose **JSON** (Learn how we protect your data [here](https://tiktok-depression-survey.vercel.app/guide/information-privacy)).
+9. For **Select file format**, choose **JSON** ([Learn how we protect your data here](https://tiktok-depression-survey.vercel.app/guide/information-privacy)).
 10. Tap the **Request data** button at the bottom of the screen.
-11. Wait a few minutes to a few days for TikTok to process your request.
+11. **After submitting your request, if you refresh the webpage (or reopen the app and navigate to the download page), your data should be ready. If not, please wait a few minutes to a few days.**
+12. Wait a few minutes to a few days for TikTok to process your request.
 
 #### On Desktop/PC:
 
@@ -36,9 +37,10 @@ Follow these instructions to request and download your TikTok data securely.
 4. Under the **Privacy** section, click **Download your data**.
 5. Make sure you are on the **Request Data** tab.
 6. Under **Select data to download**, choose **All data**.
-7. For **Select file format**, select **JSON** (Learn how we protect your data [here](https://tiktok-depression-survey.vercel.app/guide/information-privacy)).
+7. For **Select file format**, select **JSON** ([Learn how we protect your data here](https://tiktok-depression-survey.vercel.app/guide/information-privacy)).
 8. Click the **Request data** button at the bottom of the page.
-9. Wait a few minutes to a few days for TikTok to process your request.
+9. **After submitting your request, if you refresh the webpage (or reopen the app and navigate to the download page), your data should be ready. If not, please wait a few minutes to a few days.**
+10. Wait a few minutes to a few days for TikTok to process your request.
 
 ---
 
