@@ -49,6 +49,5 @@ model ConsentForm {
   parentName      String?
   parentSignature String? // Store parent signature as SVG string
   parentDate      DateTime?
-  createdAt       DateTime  @default(now())
   completed       Boolean   @default(false)
 }
