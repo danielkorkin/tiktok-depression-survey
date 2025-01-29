@@ -204,8 +204,8 @@ export default function Home() {
 							</h2>
 							<p className="text-lg mb-6">
 								We believe in transparency and collaboration.
-								That&apos;s why we&apos;ve made the source code for this
-								study publicly available.
+								That&apos;s why we&apos;ve made the source code
+								for this study publicly available.
 							</p>
 							<Link
 								href="https://github.com/danielkorkin/tiktok-depression-survey"
