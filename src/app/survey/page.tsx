@@ -55,6 +55,12 @@ interface TikTokData {
 				Link: string;
 			}>;
 		};
+		"Like List"?: {
+			ItemFavoriteList?: Array<{
+				date: string;
+				link: string;
+			}>;
+		};
 	};
 }
 
@@ -68,6 +74,7 @@ function SurveyPageContent() {
 	const [error, setError] = useState<string | null>(null);
 	const [phq9, setPhq9] = useState<number[]>(Array(9).fill(0));
 	const [videoList, setVideoList] = useState<any[] | null>(null);
+	const [likedList, setLikedList] = useState<any[] | null>(null);
 	const [requestDate, setRequestDate] = useState<CalendarDate>(
 		today(getLocalTimeZone()),
 	);
@@ -177,13 +184,14 @@ function SurveyPageContent() {
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({
 					userKey,
-					phq9Score,
+					phq9Score: phq9.reduce((a, b) => a + b, 0),
 					age,
 					gender,
 					videoList,
+					likedList,
 					agreedTerms,
-					agreedExtra: user?.isOver18 ? null : agreedExtra,
-					requestDate: requestDate.toString(), // Add new fields
+					agreedExtra,
+					requestDate: requestDate.toString(),
 					timezone,
 				}),
 			});
@@ -220,7 +228,7 @@ function SurveyPageContent() {
 					event.target.result as string,
 				);
 
-				// Add validation checks
+				// Extract video list
 				if (!parsedData?.Activity?.["Video Browsing History"]) {
 					throw new Error("Missing Video Browsing History in data");
 				}
@@ -228,33 +236,31 @@ function SurveyPageContent() {
 				const extractedVideoList =
 					parsedData.Activity["Video Browsing History"].VideoList;
 
-				if (!Array.isArray(extractedVideoList)) {
-					throw new Error("VideoList is not an array");
+				// Extract liked list
+				if (!parsedData?.Activity?.["Like List"]?.ItemFavoriteList) {
+					throw new Error("Missing Like List in data");
 				}
 
-				if (extractedVideoList.length === 0) {
-					throw new Error("VideoList is empty");
-				}
+				const extractedLikedList =
+					parsedData.Activity["Like List"].ItemFavoriteList;
 
-				// Validate video list structure
-				const isValidVideoList = extractedVideoList.every(
-					(video) =>
-						typeof video === "object" &&
-						typeof video.Date === "string" &&
-						typeof video.Link === "string",
-				);
-
-				if (!isValidVideoList) {
-					throw new Error("Invalid video data structure");
+				// Validate both lists
+				if (
+					!Array.isArray(extractedVideoList) ||
+					!Array.isArray(extractedLikedList)
+				) {
+					throw new Error("Invalid data structure");
 				}
 
 				setVideoList(extractedVideoList);
+				setLikedList(extractedLikedList);
 				setError(null);
 			} catch (err) {
 				const errorMessage =
 					err instanceof Error ? err.message : "Failed to parse file";
 				setError(`Invalid file format: ${errorMessage}`);
 				setVideoList(null);
+				setLikedList(null);
 			}
 		};
 

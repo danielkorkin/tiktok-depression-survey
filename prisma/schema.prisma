@@ -25,18 +25,19 @@ model User {
 }
 
 model Survey {
-  id           Int      @id @default(autoincrement())
-  phq9Score    Int
-  age          Int
-  gender       String
-  videoList    String
-  agreedTerms  Boolean
-  agreedExtra  Boolean?
-  requestDate  DateTime // Add this field
-  timezone     String   // Add this field
-  userId       Int      @unique
-  user         User     @relation(fields: [userId], references: [id])
-  submittedAt  DateTime @default(now())
+  id          Int      @id @default(autoincrement())
+  phq9Score   Int
+  age         Int
+  gender      String
+  videoList   String // Encrypted JSON array
+  likedList   String? // Add new field for encrypted liked posts
+  agreedTerms Boolean
+  agreedExtra Boolean?
+  requestDate DateTime
+  timezone    String
+  userId      Int      @unique
+  submittedAt DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [id])
 }
 
 model ConsentForm {
@@ -51,4 +52,3 @@ model ConsentForm {
   createdAt       DateTime  @default(now())
   completed       Boolean   @default(false)
 }
-

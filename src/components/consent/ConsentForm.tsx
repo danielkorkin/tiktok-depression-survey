@@ -199,8 +199,7 @@ const ConsentContent = ({
 	<Document>
 		<Page size="A4" style={styles.page}>
 			<Text style={styles.title}>
-				Student Researchers: Daniel Korkin, Vikram
-				Hiranandani
+				Student Researchers: Daniel Korkin, Vikram Hiranandani
 			</Text>
 			<Text style={styles.title}>
 				Title of Project: Leveraging Social Media Data and AI to Predict
@@ -415,7 +414,8 @@ export function ConsentForm({ isMinor, onComplete }: ConsentFormProps) {
 				<>
 					<CardTitle>Informed Consent Form</CardTitle>
 					<p className="text-sm text-muted-foreground mt-2">
-						Note: This consent form is stored separately and not linked to your TikTok data or PHQ-9 responses.
+						Note: This consent form is stored separately and not
+						linked to your TikTok data or PHQ-9 responses.
 					</p>
 				</>
 			</CardHeader>

@@ -10,10 +10,11 @@ interface SurveyRequestBody {
 	age: number;
 	gender: string;
 	videoList: any[];
+	likedList: any[]; // Add new field
 	agreedTerms: boolean;
 	agreedExtra?: boolean | null;
-	requestDate: string; // Add new field
-	timezone: string; // Add new field
+	requestDate: string;
+	timezone: string;
 }
 
 export async function POST(request: Request) {
@@ -25,6 +26,7 @@ export async function POST(request: Request) {
 			age,
 			gender,
 			videoList,
+			likedList,
 			agreedTerms,
 			agreedExtra,
 			requestDate,
@@ -36,11 +38,8 @@ export async function POST(request: Request) {
 			!userKey ||
 			typeof phq9Score !== "number" ||
 			!Array.isArray(videoList) ||
-			typeof agreedTerms !== "boolean" ||
-			typeof age !== "number" ||
-			age < 13 ||
-			age > 100 ||
-			!["male", "female", "other"].includes(gender.toLowerCase())
+			!Array.isArray(likedList) ||
+			typeof agreedTerms !== "boolean"
 		) {
 			return NextResponse.json(
 				{ error: "Missing or invalid required fields." },
@@ -48,50 +47,30 @@ export async function POST(request: Request) {
 			);
 		}
 
-		// Find the user by userKey and include the survey relation
-		const user = await prisma.user.findUnique({
-			where: { userKey },
-			include: { survey: true },
-		});
+		// Encrypt both lists
+		const encryptedVideoList = encryptWithPublicKey(videoList);
+		const encryptedLikedList = encryptWithPublicKey(likedList);
 
-		if (!user) {
-			return NextResponse.json(
-				{ error: "User not found." },
-				{ status: 404 },
-			);
-		}
-
-		// Check if the user has already submitted a survey
-		if (user.survey) {
-			return NextResponse.json(
-				{ error: "Survey already submitted for this user." },
-				{ status: 400 },
-			);
-		}
-
-		// Encrypt the video list data
-		const encryptedChunks = encryptWithPublicKey(videoList);
-
-		// Create survey with encrypted data array
+		// Create survey with both encrypted lists
 		const survey = await prisma.survey.create({
 			data: {
 				userId: user.id,
 				phq9Score,
 				age,
 				gender: gender.toLowerCase(),
-				videoList: JSON.stringify(encryptedChunks),
+				videoList: JSON.stringify(encryptedVideoList),
+				likedList: JSON.stringify(encryptedLikedList),
 				agreedTerms,
 				agreedExtra,
-				requestDate: new Date(requestDate), // Convert string to Date
+				requestDate: new Date(requestDate),
 				timezone,
 			},
 		});
 
 		return NextResponse.json({ success: true }, { status: 201 });
 	} catch (error) {
-		console.error("Error submitting survey:", error);
 		return NextResponse.json(
-			{ error: "Internal Server Error." },
+			{ error: "Failed to submit survey." },
 			{ status: 500 },
 		);
 	}

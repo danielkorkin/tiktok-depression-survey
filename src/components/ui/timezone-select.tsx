@@ -52,8 +52,8 @@ export default function TimezoneSelect({
 							? "hsl(var(--accent))"
 							: "transparent"
 						: state.isFocused
-						? base.backgroundColor
-						: "transparent",
+							? base.backgroundColor
+							: "transparent",
 					color: isDark ? "hsl(var(--foreground))" : base.color,
 					"&:hover": {
 						backgroundColor: isDark
