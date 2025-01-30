@@ -50,15 +50,18 @@ interface UserData {
 interface TikTokData {
 	Activity: {
 		"Video Browsing History"?: {
-			VideoList?: Array<{
+			VideoList: Array<{
 				Date: string;
 				Link: string;
+				VideoLink?: string;
+				// Add other expected fields
 			}>;
 		};
 		"Like List"?: {
-			ItemFavoriteList?: Array<{
+			ItemFavoriteList: Array<{
 				date: string;
 				link: string;
+				// Add other expected fields
 			}>;
 		};
 	};
@@ -210,55 +213,69 @@ function SurveyPageContent() {
 		}
 	};
 
-	const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+	const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
 		const file = e.target.files && e.target.files[0];
 		if (!file) {
 			setError("Please select a file");
 			return;
 		}
 
+		// Verify file type
+		if (file.type !== "application/json") {
+			setError("Please upload a valid JSON file");
+			return;
+		}
+
 		const reader = new FileReader();
-		reader.onload = (event) => {
+		reader.onload = async (event) => {
 			try {
 				if (!event.target?.result) {
 					throw new Error("Failed to read file");
 				}
 
-				const parsedData: TikTokData = JSON.parse(
-					event.target.result as string,
-				);
-
-				// Extract video list
-				if (!parsedData?.Activity?.["Video Browsing History"]) {
-					throw new Error("Missing Video Browsing History in data");
+				// Try parsing the JSON
+				let parsedData: TikTokData;
+				try {
+					parsedData = JSON.parse(event.target.result as string);
+				} catch (parseError) {
+					throw new Error(
+						"Invalid JSON format. Please ensure you're uploading the correct TikTok data file."
+					);
 				}
 
-				const extractedVideoList =
-					parsedData.Activity["Video Browsing History"].VideoList;
-
-				// Extract liked list
-				if (!parsedData?.Activity?.["Like List"]?.ItemFavoriteList) {
-					throw new Error("Missing Like List in data");
+				// Validate data structure
+				if (!parsedData?.Activity) {
+					throw new Error(
+						"Invalid TikTok data format: Missing Activity section"
+					);
 				}
 
-				const extractedLikedList =
-					parsedData.Activity["Like List"].ItemFavoriteList;
-
-				// Validate both lists
-				if (
-					!Array.isArray(extractedVideoList) ||
-					!Array.isArray(extractedLikedList)
-				) {
-					throw new Error("Invalid data structure");
+				// Extract video list with validation
+				const videoList =
+					parsedData.Activity["Video Browsing History"]?.VideoList;
+				if (!Array.isArray(videoList)) {
+					throw new Error(
+						"Invalid TikTok data format: Missing or invalid Video Browsing History"
+					);
 				}
 
-				setVideoList(extractedVideoList);
-				setLikedList(extractedLikedList);
+				// Extract liked list with validation
+				const likedList =
+					parsedData.Activity["Like List"]?.ItemFavoriteList || [];
+				if (!Array.isArray(likedList)) {
+					throw new Error(
+						"Invalid TikTok data format: Invalid Like List format"
+					);
+				}
+
+				// Update state with validated data
+				setVideoList(videoList);
+				setLikedList(likedList);
 				setError(null);
 			} catch (err) {
 				const errorMessage =
 					err instanceof Error ? err.message : "Failed to parse file";
-				setError(`Invalid file format: ${errorMessage}`);
+				setError(`Error: ${errorMessage}`);
 				setVideoList(null);
 				setLikedList(null);
 			}
@@ -267,6 +284,7 @@ function SurveyPageContent() {
 		reader.onerror = () => {
 			setError("Error reading file");
 			setVideoList(null);
+			setLikedList(null);
 		};
 
 		reader.readAsText(file);
@@ -443,15 +461,19 @@ function SurveyPageContent() {
 								<Input
 									id="videoList"
 									type="file"
-									accept=".json"
+									accept=".json,application/json"
 									onChange={handleFileUpload}
 									required
-									className={
+									className={cn(
 										fieldErrors.videoList
 											? "border-red-500"
-											: ""
-									}
+											: "",
+										"cursor-pointer"
+									)}
 								/>
+								<p className="text-sm text-muted-foreground mt-1">
+									Please upload your TikTok data JSON file
+								</p>
 								<a
 									href="/guide/how-to-download-tiktok-data"
 									className="text-primary text-sm hover:underline mt-1 block"
@@ -464,6 +486,9 @@ function SurveyPageContent() {
 									{fieldErrors.videoList}
 								</p>
 							)}
+							{error && (
+								<p className="text-red-500 text-sm">{error}</p>
+							)}
 						</div>
 
 						<div className="space-y-2">
@@ -475,7 +500,7 @@ function SurveyPageContent() {
 								value={requestDate}
 								onChange={(date: CalendarDate | null) =>
 									setRequestDate(
-										date || today(getLocalTimeZone()),
+										date || today(getLocalTimeZone())
 									)
 								}
 							>
