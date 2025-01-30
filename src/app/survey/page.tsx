@@ -221,9 +221,19 @@ function SurveyPageContent() {
 			return;
 		}
 
+		// Reset previous errors
+		setError(null);
+		setFieldErrors({});
+
+		// Check file name contains 'user_data'
+		if (!file.name.toLowerCase().includes("user_data")) {
+			setError("Please upload the correct TikTok user_data.json file");
+			return;
+		}
+
 		// Verify file type
-		if (file.type !== "application/json") {
-			setError("Please upload a valid JSON file");
+		if (!file.name.endsWith(".json")) {
+			setError("Please upload a JSON file (.json extension)");
 			return;
 		}
 
@@ -234,20 +244,28 @@ function SurveyPageContent() {
 					throw new Error("Failed to read file");
 				}
 
+				let jsonContent: string;
+				// Handle UTF-8 BOM if present
+				if (typeof event.target.result === "string") {
+					jsonContent = event.target.result.replace(/^\uFEFF/, "");
+				} else {
+					throw new Error("Invalid file content");
+				}
+
 				// Try parsing the JSON
 				let parsedData: TikTokData;
 				try {
-					parsedData = JSON.parse(event.target.result as string);
+					parsedData = JSON.parse(jsonContent);
 				} catch (parseError) {
 					throw new Error(
-						"Invalid JSON format. Please ensure you're uploading the correct TikTok data file.",
+						"Invalid JSON format. Make sure you're uploading the unmodified TikTok data file."
 					);
 				}
 
 				// Validate data structure
 				if (!parsedData?.Activity) {
 					throw new Error(
-						"Invalid TikTok data format: Missing Activity section",
+						"Invalid TikTok data format: Missing Activity section"
 					);
 				}
 
@@ -256,7 +274,7 @@ function SurveyPageContent() {
 					parsedData.Activity["Video Browsing History"]?.VideoList;
 				if (!Array.isArray(videoList)) {
 					throw new Error(
-						"Invalid TikTok data format: Missing or invalid Video Browsing History",
+						"Invalid TikTok data: Missing or invalid Video Browsing History. Please make sure to request your data with 'Video Browsing History' selected."
 					);
 				}
 
@@ -265,7 +283,7 @@ function SurveyPageContent() {
 					parsedData.Activity["Like List"]?.ItemFavoriteList || [];
 				if (!Array.isArray(likedList)) {
 					throw new Error(
-						"Invalid TikTok data format: Invalid Like List format",
+						"Invalid TikTok data: Invalid Like List format. Please make sure to request your data with 'Like List' selected."
 					);
 				}
 
@@ -273,10 +291,15 @@ function SurveyPageContent() {
 				setVideoList(videoList);
 				setLikedList(likedList);
 				setError(null);
+				setFieldErrors((prev) => ({ ...prev, videoList: undefined }));
 			} catch (err) {
 				const errorMessage =
 					err instanceof Error ? err.message : "Failed to parse file";
 				setError(`Error: ${errorMessage}`);
+				setFieldErrors((prev) => ({
+					...prev,
+					videoList: "Please upload a valid TikTok data file",
+				}));
 				setVideoList(null);
 				setLikedList(null);
 			}
