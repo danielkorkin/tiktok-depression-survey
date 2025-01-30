@@ -80,10 +80,10 @@ function SurveyPageContent() {
 	const [videoList, setVideoList] = useState<any[] | null>(null);
 	const [likedList, setLikedList] = useState<any[] | null>(null);
 	const [requestDate, setRequestDate] = useState<CalendarDate>(
-		today(getLocalTimeZone()),
+		today(getLocalTimeZone())
 	);
 	const [timezone, setTimezone] = useState(
-		Intl.DateTimeFormat().resolvedOptions().timeZone,
+		Intl.DateTimeFormat().resolvedOptions().timeZone
 	);
 	const [age, setAge] = useState<number | "">("");
 	const [gender, setGender] = useState<string>("");
@@ -92,7 +92,7 @@ function SurveyPageContent() {
 	const [submitting, setSubmitting] = useState<boolean>(false);
 	const [consentCompleted, setConsentCompleted] = useState(false);
 	const [fieldErrors, setFieldErrors] = useState<{ [key: string]: string }>(
-		{},
+		{}
 	);
 
 	useEffect(() => {
@@ -107,7 +107,7 @@ function SurveyPageContent() {
 				if (!res.ok) {
 					const errorData = await res.json();
 					throw new Error(
-						errorData.error || "Failed to fetch user data.",
+						errorData.error || "Failed to fetch user data."
 					);
 				}
 				const data = await res.json();
@@ -168,7 +168,7 @@ function SurveyPageContent() {
 
 		if (user?.isOver18 === false && !agreedExtra) {
 			setError(
-				"You must agree to the additional terms for users under 18.",
+				"You must agree to the additional terms for users under 18."
 			);
 			return;
 		}
@@ -238,6 +238,13 @@ function SurveyPageContent() {
 		}
 
 		const reader = new FileReader();
+		const filterVideosByDate = (items: any[]): any[] => {
+			return items.filter((item) => {
+				const date = new Date(item.Date || item.date);
+				return date.getFullYear() === 2025;
+			});
+		};
+
 		reader.onload = async (event) => {
 			try {
 				if (!event.target?.result) {
@@ -245,53 +252,51 @@ function SurveyPageContent() {
 				}
 
 				let jsonContent: string;
-				// Handle UTF-8 BOM if present
 				if (typeof event.target.result === "string") {
 					jsonContent = event.target.result.replace(/^\uFEFF/, "");
 				} else {
 					throw new Error("Invalid file content");
 				}
 
-				// Try parsing the JSON
-				let parsedData: TikTokData;
 				try {
-					parsedData = JSON.parse(jsonContent);
+					const parsedData: TikTokData = JSON.parse(jsonContent);
+
+					// Filter videos and likes before validation
+					const rawVideoList =
+						parsedData.Activity["Video Browsing History"]
+							?.VideoList || [];
+					const rawLikedList =
+						parsedData.Activity["Like List"]?.ItemFavoriteList ||
+						[];
+
+					// Apply date filtering
+					const filteredVideoList = filterVideosByDate(rawVideoList);
+					const filteredLikedList = filterVideosByDate(rawLikedList);
+
+					// Validate filtered lists
+					if (!Array.isArray(filteredVideoList)) {
+						throw new Error(
+							"Invalid Video Browsing History format"
+						);
+					}
+
+					if (!Array.isArray(filteredLikedList)) {
+						throw new Error("Invalid Like List format");
+					}
+
+					// Update state with filtered data
+					setVideoList(filteredVideoList);
+					setLikedList(filteredLikedList);
+					setError(null);
+					setFieldErrors((prev) => ({
+						...prev,
+						videoList: undefined,
+					}));
 				} catch (parseError) {
 					throw new Error(
-						"Invalid JSON format. Make sure you're uploading the unmodified TikTok data file."
+						"Invalid JSON format. Please upload the unmodified TikTok data file."
 					);
 				}
-
-				// Validate data structure
-				if (!parsedData?.Activity) {
-					throw new Error(
-						"Invalid TikTok data format: Missing Activity section"
-					);
-				}
-
-				// Extract video list with validation
-				const videoList =
-					parsedData.Activity["Video Browsing History"]?.VideoList;
-				if (!Array.isArray(videoList)) {
-					throw new Error(
-						"Invalid TikTok data: Missing or invalid Video Browsing History. Please make sure to request your data with 'Video Browsing History' selected."
-					);
-				}
-
-				// Extract liked list with validation
-				const likedList =
-					parsedData.Activity["Like List"]?.ItemFavoriteList || [];
-				if (!Array.isArray(likedList)) {
-					throw new Error(
-						"Invalid TikTok data: Invalid Like List format. Please make sure to request your data with 'Like List' selected."
-					);
-				}
-
-				// Update state with validated data
-				setVideoList(videoList);
-				setLikedList(likedList);
-				setError(null);
-				setFieldErrors((prev) => ({ ...prev, videoList: undefined }));
 			} catch (err) {
 				const errorMessage =
 					err instanceof Error ? err.message : "Failed to parse file";
@@ -492,7 +497,7 @@ function SurveyPageContent() {
 										fieldErrors.videoList
 											? "border-red-500"
 											: "",
-										"cursor-pointer",
+										"cursor-pointer"
 									)}
 								/>
 								<p className="text-sm text-muted-foreground mt-1">
@@ -524,7 +529,7 @@ function SurveyPageContent() {
 								value={requestDate}
 								onChange={(date: CalendarDate | null) =>
 									setRequestDate(
-										date || today(getLocalTimeZone()),
+										date || today(getLocalTimeZone())
 									)
 								}
 							>
