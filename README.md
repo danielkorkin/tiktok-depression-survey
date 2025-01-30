@@ -84,8 +84,6 @@ To run this project, you will need to add the following environment variables to
 
 `DATABASE_URL=postgres-database-url`
 
-`PUBLIC_KEY=public-encryption-key`
-
 `ACCEPT_SIGNUPS=true-or-false`
 
 ## Installation

@@ -36,4 +36,4 @@ updatedAt: "2024-12-14"
 ## Step 5: Submit Your Data
 
 - Once all forms are complete, submit your **PHQ-9 scores**, **TikTok data**, and **consent form**.
-- All data will be **encrypted and anonymized** for privacy.
+- All data will be **anonymized** for privacy.

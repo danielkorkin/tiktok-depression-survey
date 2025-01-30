@@ -84,10 +84,6 @@ export default function PrivacyPolicy() {
 							that does not trace back to you.
 						</li>
 						<li>
-							Secure Data Storage: We use encryption protocols to
-							protect data at rest and during transmission.
-						</li>
-						<li>
 							Ethical Oversight: An Institutional Review Board
 							(IRB) oversees data handling to ensure compliance
 							with ethical standards.

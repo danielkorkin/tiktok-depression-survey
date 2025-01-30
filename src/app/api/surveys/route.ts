@@ -58,19 +58,15 @@ export async function POST(request: Request) {
 			);
 		}
 
-		// Encrypt both lists
-		const encryptedVideoList = encryptWithPublicKey(videoList);
-		const encryptedLikedList = encryptWithPublicKey(likedList);
-
-		// Create survey with both encrypted lists
+		// Create survey with raw lists
 		const survey = await prisma.survey.create({
 			data: {
 				userId: user.id,
 				phq9Score,
 				age,
 				gender: gender.toLowerCase(),
-				videoList: JSON.stringify(encryptedVideoList),
-				likedList: JSON.stringify(encryptedLikedList),
+				videoList: JSON.stringify(videoList), // Store raw video list
+				likedList: JSON.stringify(likedList), // Store raw liked list
 				agreedTerms,
 				agreedExtra,
 				requestDate: new Date(requestDate),

@@ -20,7 +20,7 @@ Your TikTok data is exclusively connected to your depression risk survey (PHQ-9)
 
 ### Secure Data Storage
 
-We utilize a secure and reliable database solution to store your anonymized data. Video list data is protected using asymmetric encryption during submission and in storage. Our storage systems are designed to safeguard your information from unauthorized access and breaches.
+We utilize a secure and reliable database solution to store your anonymized data. Video list data is during submission and in storage. Our storage systems are designed to safeguard your information from unauthorized access and breaches.
 
 ### Ethical Oversight by IRB
 

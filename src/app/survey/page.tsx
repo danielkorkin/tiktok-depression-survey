@@ -240,14 +240,14 @@ function SurveyPageContent() {
 					parsedData = JSON.parse(event.target.result as string);
 				} catch (parseError) {
 					throw new Error(
-						"Invalid JSON format. Please ensure you're uploading the correct TikTok data file."
+						"Invalid JSON format. Please ensure you're uploading the correct TikTok data file.",
 					);
 				}
 
 				// Validate data structure
 				if (!parsedData?.Activity) {
 					throw new Error(
-						"Invalid TikTok data format: Missing Activity section"
+						"Invalid TikTok data format: Missing Activity section",
 					);
 				}
 
@@ -256,7 +256,7 @@ function SurveyPageContent() {
 					parsedData.Activity["Video Browsing History"]?.VideoList;
 				if (!Array.isArray(videoList)) {
 					throw new Error(
-						"Invalid TikTok data format: Missing or invalid Video Browsing History"
+						"Invalid TikTok data format: Missing or invalid Video Browsing History",
 					);
 				}
 
@@ -265,7 +265,7 @@ function SurveyPageContent() {
 					parsedData.Activity["Like List"]?.ItemFavoriteList || [];
 				if (!Array.isArray(likedList)) {
 					throw new Error(
-						"Invalid TikTok data format: Invalid Like List format"
+						"Invalid TikTok data format: Invalid Like List format",
 					);
 				}
 
@@ -469,7 +469,7 @@ function SurveyPageContent() {
 										fieldErrors.videoList
 											? "border-red-500"
 											: "",
-										"cursor-pointer"
+										"cursor-pointer",
 									)}
 								/>
 								<p className="text-sm text-muted-foreground mt-1">
@@ -501,7 +501,7 @@ function SurveyPageContent() {
 								value={requestDate}
 								onChange={(date: CalendarDate | null) =>
 									setRequestDate(
-										date || today(getLocalTimeZone())
+										date || today(getLocalTimeZone()),
 									)
 								}
 							>

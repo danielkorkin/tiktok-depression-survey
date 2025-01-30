@@ -91,7 +91,7 @@ export default function TermsOfService() {
 						5. Data Usage and Security:
 					</h2>
 					<ul className="list-disc pl-6 text-gray-700 dark:text-gray-300">
-						<li>Data is encrypted and stored securely.</li>
+						<li>Data is stored securely.</li>
 						<li>
 							It will only be used for research purposes and not
 							shared with third parties.
