@@ -28,6 +28,7 @@ import { ConsentForm, ConsentFormData } from "@/components/consent/ConsentForm";
 import { DateField, DateInput, DateSegment } from "react-aria-components";
 import TimezoneSelect from "@/components/ui/timezone-select";
 import { CalendarDate, today, getLocalTimeZone } from "@internationalized/date";
+import { cn } from "@/lib/utils";
 
 const PHQ9Questions = [
 	"Little interest or pleasure in doing things",
