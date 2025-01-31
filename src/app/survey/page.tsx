@@ -226,10 +226,10 @@ function SurveyPageContent() {
 		setFieldErrors({});
 
 		// Check file name contains 'user_data'
-		if (!file.name.toLowerCase().includes("user_data")) {
-			setError("Please upload the correct TikTok user_data.json file");
-			return;
-		}
+		// if (!file.name.toLowerCase().includes("user_data")) {
+		// 	setError("Please upload the correct TikTok user_data.json file");
+		// 	return;
+		// }
 
 		// Verify file type
 		if (!file.name.endsWith(".json")) {
