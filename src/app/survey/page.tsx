@@ -232,13 +232,6 @@ function SurveyPageContent() {
 		}
 
 		const reader = new FileReader();
-		const filterVideosByDate = (items: any[]): any[] => {
-			return items.filter((item) => {
-				const date = new Date(item.Date || item.date);
-				return date.getFullYear() === 2025;
-			});
-		};
-
 		reader.onload = async (event) => {
 			try {
 				if (!event.target?.result) {
@@ -255,29 +248,32 @@ function SurveyPageContent() {
 				try {
 					const parsedData: TikTokData = JSON.parse(jsonContent);
 
-					// Validate TikTok data structure
-					if (!parsedData.Activity) {
-						throw new Error(
-							"Invalid TikTok data: Missing Activity section"
-						);
-					}
-
-					// Filter videos and likes before validation
+					// Get only video and like lists
 					const rawVideoList =
-						parsedData.Activity["Video Browsing History"]
+						parsedData.Activity?.["Video Browsing History"]
 							?.VideoList || [];
 					const rawLikedList =
-						parsedData.Activity["Like List"]?.ItemFavoriteList ||
+						parsedData.Activity?.["Like List"]?.ItemFavoriteList ||
 						[];
 
-					// Apply date filtering
-					const filteredVideoList = filterVideosByDate(rawVideoList);
-					const filteredLikedList = filterVideosByDate(rawLikedList);
+					// Filter for 2025 data only
+					const filteredVideoList = rawVideoList.filter((item) => {
+						const date = new Date(item.Date);
+						return date.getFullYear() === 2025;
+					});
 
-					// Validate data structure
-					if (!Array.isArray(rawVideoList)) {
+					const filteredLikedList = rawLikedList.filter((item) => {
+						const date = new Date(item.date);
+						return date.getFullYear() === 2025;
+					});
+
+					// Validate filtered data
+					if (
+						!Array.isArray(filteredVideoList) ||
+						filteredVideoList.length === 0
+					) {
 						throw new Error(
-							"Invalid Video Browsing History format. Make sure you've downloaded your TikTok data with Video History included."
+							"No video data found from 2025. Please make sure you have browsing history from 2025."
 						);
 					}
 
@@ -291,7 +287,7 @@ function SurveyPageContent() {
 					}));
 				} catch (parseError) {
 					throw new Error(
-						"Invalid TikTok data format. Please make sure you're uploading the correct TikTok data file."
+						"Invalid TikTok data format. Please make sure you're uploading your TikTok data file and that it contains video history from 2025."
 					);
 				}
 			} catch (err) {
@@ -300,7 +296,8 @@ function SurveyPageContent() {
 				setError(`Error: ${errorMessage}`);
 				setFieldErrors((prev) => ({
 					...prev,
-					videoList: "Please upload a valid TikTok data file",
+					videoList:
+						"Please upload a valid TikTok data file with 2025 video history",
 				}));
 				setVideoList(null);
 				setLikedList(null);
