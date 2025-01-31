@@ -225,12 +225,6 @@ function SurveyPageContent() {
 		setError(null);
 		setFieldErrors({});
 
-		// Check file name contains 'user_data'
-		// if (!file.name.toLowerCase().includes("user_data")) {
-		// 	setError("Please upload the correct TikTok user_data.json file");
-		// 	return;
-		// }
-
 		// Verify file type
 		if (!file.name.endsWith(".json")) {
 			setError("Please upload a JSON file (.json extension)");
@@ -261,6 +255,13 @@ function SurveyPageContent() {
 				try {
 					const parsedData: TikTokData = JSON.parse(jsonContent);
 
+					// Validate TikTok data structure
+					if (!parsedData.Activity) {
+						throw new Error(
+							"Invalid TikTok data: Missing Activity section"
+						);
+					}
+
 					// Filter videos and likes before validation
 					const rawVideoList =
 						parsedData.Activity["Video Browsing History"]
@@ -273,15 +274,11 @@ function SurveyPageContent() {
 					const filteredVideoList = filterVideosByDate(rawVideoList);
 					const filteredLikedList = filterVideosByDate(rawLikedList);
 
-					// Validate filtered lists
-					if (!Array.isArray(filteredVideoList)) {
+					// Validate data structure
+					if (!Array.isArray(rawVideoList)) {
 						throw new Error(
-							"Invalid Video Browsing History format"
+							"Invalid Video Browsing History format. Make sure you've downloaded your TikTok data with Video History included."
 						);
-					}
-
-					if (!Array.isArray(filteredLikedList)) {
-						throw new Error("Invalid Like List format");
 					}
 
 					// Update state with filtered data
@@ -294,7 +291,7 @@ function SurveyPageContent() {
 					}));
 				} catch (parseError) {
 					throw new Error(
-						"Invalid JSON format. Please upload the unmodified TikTok data file."
+						"Invalid TikTok data format. Please make sure you're uploading the correct TikTok data file."
 					);
 				}
 			} catch (err) {
