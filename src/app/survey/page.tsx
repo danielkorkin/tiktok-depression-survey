@@ -328,10 +328,11 @@ function SurveyPageContent() {
 				throw new Error("Video list must be an array");
 			}
 
-			// Parse and validate liked list
-			const parsedLikedList = manualLikedList
-				? JSON.parse(manualLikedList)
-				: [];
+			// Parse and validate liked list (now required)
+			if (!manualLikedList.trim()) {
+				throw new Error("Liked list is required");
+			}
+			const parsedLikedList = JSON.parse(manualLikedList);
 			if (!Array.isArray(parsedLikedList)) {
 				throw new Error("Liked list must be an array");
 			}
@@ -361,11 +362,10 @@ function SurveyPageContent() {
 			setError(`Error: ${errorMessage}`);
 			setFieldErrors((prev) => ({
 				...prev,
-				videoList:
-					"Please upload a valid TikTok data file with 2025 video history, or try using manual input instead.",
+				videoList: undefined,
+				likedList:
+					"Please provide both video and liked lists in valid JSON format",
 			}));
-			setVideoList(null);
-			setLikedList(null);
 		}
 	};
 
