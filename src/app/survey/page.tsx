@@ -399,10 +399,31 @@ function SurveyPageContent() {
 			}
 		});
 
-		// VideoList validation
-		if (!videoList || !Array.isArray(videoList) || videoList.length === 0) {
-			errors.videoList =
-				"Please upload a valid TikTok VideoList JSON file";
+		if (uploadMethod === "automatic") {
+			// VideoList validation
+			if (!videoList || !Array.isArray(videoList) || videoList.length === 0) {
+				errors.videoList =
+					"Please upload a valid TikTok VideoList JSON file";
+			}
+		}
+
+		if (uploadMethod === "manual") {
+			if (!manualVideoList.trim()) {
+				errors.videoList = "Please enter your video list";
+			}
+			if (!manualLikedList.trim()) {
+				errors.likedList = "Please enter your liked list";
+			}
+			try {
+				if (manualVideoList) {
+					JSON.parse(manualVideoList);
+				}
+				if (manualLikedList) {
+					JSON.parse(manualLikedList);
+				}
+			} catch (err) {
+				errors.jsonFormat = "Invalid JSON format";
+			}
 		}
 
 		// Date validation
@@ -618,7 +639,7 @@ function SurveyPageContent() {
 									</div>
 									<div className="space-y-2">
 										<Label htmlFor="manualLikedList">
-											Liked List JSON (Optional)
+											Liked List JSON *
 										</Label>
 										<Textarea
 											id="manualLikedList"
@@ -631,6 +652,7 @@ function SurveyPageContent() {
 											placeholder='[{"date": "2025-01-01 12:00:00", "link": "https://..."}, ...]'
 											className="font-mono"
 											rows={10}
+											required
 										/>
 									</div>
 									<Button
