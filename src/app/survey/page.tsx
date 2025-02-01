@@ -29,6 +29,7 @@ import { DateField, DateInput, DateSegment } from "react-aria-components";
 import TimezoneSelect from "@/components/ui/timezone-select";
 import { CalendarDate, today, getLocalTimeZone } from "@internationalized/date";
 import { cn } from "@/lib/utils";
+import { Textarea } from "@/components/ui/textarea";
 
 const PHQ9Questions = [
 	"Little interest or pleasure in doing things",
@@ -54,7 +55,6 @@ interface TikTokData {
 			VideoList: Array<{
 				Date: string;
 				Link: string;
-				VideoLink?: string;
 				// Add other expected fields
 			}>;
 		};
@@ -67,6 +67,8 @@ interface TikTokData {
 		};
 	};
 }
+
+type UploadMethod = "automatic" | "manual";
 
 function SurveyPageContent() {
 	const searchParams = useSearchParams();
@@ -94,6 +96,9 @@ function SurveyPageContent() {
 	const [fieldErrors, setFieldErrors] = useState<{ [key: string]: string }>(
 		{}
 	);
+	const [uploadMethod, setUploadMethod] = useState<UploadMethod>("automatic");
+	const [manualVideoList, setManualVideoList] = useState<string>("");
+	const [manualLikedList, setManualLikedList] = useState<string>("");
 
 	useEffect(() => {
 		if (!userKey) {
@@ -313,6 +318,54 @@ function SurveyPageContent() {
 		reader.readAsText(file);
 	};
 
+	const handleManualInput = () => {
+		try {
+			// Parse and validate video list
+			const parsedVideoList = JSON.parse(manualVideoList);
+			if (!Array.isArray(parsedVideoList)) {
+				throw new Error("Video list must be an array");
+			}
+
+			// Parse and validate liked list
+			const parsedLikedList = manualLikedList
+				? JSON.parse(manualLikedList)
+				: [];
+			if (!Array.isArray(parsedLikedList)) {
+				throw new Error("Liked list must be an array");
+			}
+
+			// Filter for 2025 data only
+			const filteredVideoList = parsedVideoList.filter((item) => {
+				const date = new Date(item.Date);
+				return date.getFullYear() === 2025;
+			});
+
+			const filteredLikedList = parsedLikedList.filter((item) => {
+				const date = new Date(item.date);
+				return date.getFullYear() === 2025;
+			});
+
+			if (filteredVideoList.length === 0) {
+				throw new Error("No video data found from 2025");
+			}
+
+			setVideoList(filteredVideoList);
+			setLikedList(filteredLikedList);
+			setError(null);
+			setFieldErrors((prev) => ({ ...prev, videoList: undefined }));
+		} catch (err) {
+			const errorMessage =
+				err instanceof Error ? err.message : "Invalid JSON format";
+			setError(`Error: ${errorMessage}`);
+			setFieldErrors((prev) => ({
+				...prev,
+				videoList: "Please enter valid JSON data with 2025 video history",
+			}));
+			setVideoList(null);
+			setLikedList(null);
+		}
+	};
+
 	const handleConsentComplete = async (formData: ConsentFormData) => {
 		try {
 			const res = await fetch("/api/consent", {
@@ -477,33 +530,102 @@ function SurveyPageContent() {
 						))}
 
 						<div className="space-y-2">
-							<Label htmlFor="videoList">
-								Upload VideoList JSON *
-							</Label>
-							<div>
-								<Input
-									id="videoList"
-									type="file"
-									accept=".json,application/json"
-									onChange={handleFileUpload}
-									required
-									className={cn(
-										fieldErrors.videoList
-											? "border-red-500"
-											: "",
-										"cursor-pointer"
-									)}
-								/>
-								<p className="text-sm text-muted-foreground mt-1">
-									Please upload your TikTok data JSON file
-								</p>
-								<a
-									href="/guide/how-to-download-tiktok-data"
-									className="text-primary text-sm hover:underline mt-1 block"
-								>
-									How to download your TikTok data
-								</a>
-							</div>
+							<Label>Upload Method *</Label>
+							<Select
+								onValueChange={(value: UploadMethod) =>
+									setUploadMethod(value)
+								}
+								value={uploadMethod}
+							>
+								<SelectTrigger>
+									<SelectValue placeholder="Select upload method" />
+								</SelectTrigger>
+								<SelectContent>
+									<SelectItem value="automatic">
+										Automatic (File Upload)
+									</SelectItem>
+									<SelectItem value="manual">
+										Manual (Paste JSON)
+									</SelectItem>
+								</SelectContent>
+							</Select>
+
+							{uploadMethod === "automatic" ? (
+								<div className="space-y-2">
+									<Label htmlFor="videoList">
+										Upload VideoList JSON *
+									</Label>
+									<div>
+										<Input
+											id="videoList"
+											type="file"
+											accept=".json,application/json"
+											onChange={handleFileUpload}
+											required
+											className={cn(
+												fieldErrors.videoList
+													? "border-red-500"
+													: "",
+												"cursor-pointer"
+											)}
+										/>
+										<p className="text-sm text-muted-foreground mt-1">
+											Please upload your TikTok data JSON
+											file
+										</p>
+										<a
+											href="/guide/how-to-download-tiktok-data"
+											className="text-primary text-sm hover:underline mt-1 block"
+										>
+											How to download your TikTok data
+										</a>
+									</div>
+								</div>
+							) : (
+								<div className="space-y-4">
+									<div className="space-y-2">
+										<Label htmlFor="manualVideoList">
+											Video List JSON *
+										</Label>
+										<Textarea
+											id="manualVideoList"
+											value={manualVideoList}
+											onChange={(e) =>
+												setManualVideoList(
+													e.target.value
+												)
+											}
+											placeholder='[{"Date": "2025-01-01 12:00:00", "Link": "https://..."}, ...]'
+											className="font-mono"
+											rows={10}
+										/>
+									</div>
+									<div className="space-y-2">
+										<Label htmlFor="manualLikedList">
+											Liked List JSON (Optional)
+										</Label>
+										<Textarea
+											id="manualLikedList"
+											value={manualLikedList}
+											onChange={(e) =>
+												setManualLikedList(
+													e.target.value
+												)
+											}
+											placeholder='[{"date": "2025-01-01 12:00:00", "link": "https://..."}, ...]'
+											className="font-mono"
+											rows={10}
+										/>
+									</div>
+									<Button
+										type="button"
+										onClick={handleManualInput}
+										variant="secondary"
+									>
+										Validate JSON
+									</Button>
+								</div>
+							)}
 							{fieldErrors.videoList && (
 								<p className="text-red-500 text-sm">
 									{fieldErrors.videoList}
