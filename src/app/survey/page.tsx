@@ -82,10 +82,10 @@ function SurveyPageContent() {
 	const [videoList, setVideoList] = useState<any[] | null>(null);
 	const [likedList, setLikedList] = useState<any[] | null>(null);
 	const [requestDate, setRequestDate] = useState<CalendarDate>(
-		today(getLocalTimeZone())
+		today(getLocalTimeZone()),
 	);
 	const [timezone, setTimezone] = useState(
-		Intl.DateTimeFormat().resolvedOptions().timeZone
+		Intl.DateTimeFormat().resolvedOptions().timeZone,
 	);
 	const [age, setAge] = useState<number | "">("");
 	const [gender, setGender] = useState<string>("");
@@ -94,7 +94,7 @@ function SurveyPageContent() {
 	const [submitting, setSubmitting] = useState<boolean>(false);
 	const [consentCompleted, setConsentCompleted] = useState(false);
 	const [fieldErrors, setFieldErrors] = useState<{ [key: string]: string }>(
-		{}
+		{},
 	);
 	const [uploadMethod, setUploadMethod] = useState<UploadMethod>("automatic");
 	const [manualVideoList, setManualVideoList] = useState<string>("");
@@ -112,7 +112,7 @@ function SurveyPageContent() {
 				if (!res.ok) {
 					const errorData = await res.json();
 					throw new Error(
-						errorData.error || "Failed to fetch user data."
+						errorData.error || "Failed to fetch user data.",
 					);
 				}
 				const data = await res.json();
@@ -173,7 +173,7 @@ function SurveyPageContent() {
 
 		if (user?.isOver18 === false && !agreedExtra) {
 			setError(
-				"You must agree to the additional terms for users under 18."
+				"You must agree to the additional terms for users under 18.",
 			);
 			return;
 		}
@@ -278,7 +278,7 @@ function SurveyPageContent() {
 						filteredVideoList.length === 0
 					) {
 						throw new Error(
-							"No video data found from 2025. Please make sure you have browsing history from 2025."
+							"No video data found from 2025. Please make sure you have browsing history from 2025.",
 						);
 					}
 
@@ -292,7 +292,7 @@ function SurveyPageContent() {
 					}));
 				} catch (parseError) {
 					throw new Error(
-						"Invalid TikTok data format. Please make sure you're uploading your TikTok data file and that it contains video history from 2025."
+						"Invalid TikTok data format. Please make sure you're uploading your TikTok data file and that it contains video history from 2025.",
 					);
 				}
 			} catch (err) {
@@ -359,7 +359,8 @@ function SurveyPageContent() {
 			setError(`Error: ${errorMessage}`);
 			setFieldErrors((prev) => ({
 				...prev,
-				videoList: "Please enter valid JSON data with 2025 video history",
+				videoList:
+					"Please enter valid JSON data with 2025 video history",
 			}));
 			setVideoList(null);
 			setLikedList(null);
@@ -566,7 +567,7 @@ function SurveyPageContent() {
 												fieldErrors.videoList
 													? "border-red-500"
 													: "",
-												"cursor-pointer"
+												"cursor-pointer",
 											)}
 										/>
 										<p className="text-sm text-muted-foreground mt-1">
@@ -592,7 +593,7 @@ function SurveyPageContent() {
 											value={manualVideoList}
 											onChange={(e) =>
 												setManualVideoList(
-													e.target.value
+													e.target.value,
 												)
 											}
 											placeholder='[{"Date": "2025-01-01 12:00:00", "Link": "https://..."}, ...]'
@@ -609,7 +610,7 @@ function SurveyPageContent() {
 											value={manualLikedList}
 											onChange={(e) =>
 												setManualLikedList(
-													e.target.value
+													e.target.value,
 												)
 											}
 											placeholder='[{"date": "2025-01-01 12:00:00", "link": "https://..."}, ...]'
@@ -645,7 +646,7 @@ function SurveyPageContent() {
 								value={requestDate}
 								onChange={(date: CalendarDate | null) =>
 									setRequestDate(
-										date || today(getLocalTimeZone())
+										date || today(getLocalTimeZone()),
 									)
 								}
 							>
