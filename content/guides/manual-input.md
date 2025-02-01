@@ -83,7 +83,6 @@ This guide explains how to manually input your TikTok Video List and Liked List 
 
 5. **Paste the Content:**  
    Paste the copied content into the manual upload field in the **LikedList** text area.  
-   _Note: The original instructions mention pasting into the VideoList text area, but ensure you paste into the LikedList area for the correct data._
 
 ### On Mobile
 
