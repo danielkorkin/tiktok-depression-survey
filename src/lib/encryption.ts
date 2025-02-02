@@ -1,3 +1,5 @@
+// Encryption has been removed as it has been deemed unnecessary for the project. The encryption code is as follows if anyone wants to review it
+
 import crypto from "crypto";
 
 interface VideoData {
