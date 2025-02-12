@@ -57,8 +57,9 @@ Follow these instructions to request and download your TikTok data securely.
 7. Locate the most recent request (check the date) and tap the **Download** button.
 8. Complete any verification steps if required.
 9. Download the file (it will be a `.zip` file).
-10. Unzip the file to access the contents (a `.json` file).
-11. Upload the unzipped `.json` file to the survey page.
+10. On iPhone, press the zipped file to unzip it. On Android, press **Extract** to unzip the contents. On other platforms, the process should be similar.
+11. Unzip the file to access the contents (a `.json` file).
+12. Upload the unzipped `.json` file to the survey page.
 
 #### On Desktop/PC:
 

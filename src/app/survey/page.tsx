@@ -603,7 +603,7 @@ function SurveyPageContent() {
 										</p>
 										<a
 											href="/guide/how-to-download-tiktok-data"
-											className="text-primary text-sm hover:underline mt-1 block"
+											className="text-primary text-sm underline mt-1 block"
 										>
 											How to download your TikTok data
 										</a>
@@ -614,7 +614,7 @@ function SurveyPageContent() {
 									{uploadMethod === "manual" && (
 										<a
 											href="/guide/manual-input"
-											className="text-primary text-sm hover:underline mt-1 block"
+											className="text-primary text-sm underline mt-1 block"
 										>
 											Need help with manual input? View
 											our guide
