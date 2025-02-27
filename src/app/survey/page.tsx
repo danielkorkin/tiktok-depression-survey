@@ -31,16 +31,146 @@ import { CalendarDate, today, getLocalTimeZone } from "@internationalized/date";
 import { cn } from "@/lib/utils";
 import { Textarea } from "@/components/ui/textarea";
 
-const PHQ9Questions = [
-	"Little interest or pleasure in doing things",
-	"Feeling down, depressed, or hopeless",
-	"Trouble falling or staying asleep, or sleeping too much",
-	"Feeling tired or having little energy",
-	"Poor appetite or overeating",
-	"Feeling bad about yourself—or that you are a failure or have let yourself or your family down",
-	"Trouble concentrating on things, such as reading the newspaper or watching television",
-	"Moving or speaking so slowly that other people could have noticed? Or the opposite—being so fidgety or restless that you have been moving around a lot more than usual",
-	"Thoughts that you would be better off dead, or thoughts of hurting yourself in some way",
+// Conversion Tables for PROMIS raw score to T-score
+const adultConversionTable: { [raw: number]: { tScore: number; se: number } } =
+	{
+		8: { tScore: 38.2, se: 5.7 },
+		9: { tScore: 44.7, se: 3.3 },
+		10: { tScore: 47.5, se: 2.7 },
+		11: { tScore: 49.4, se: 2.3 },
+		12: { tScore: 50.9, se: 2.0 },
+		13: { tScore: 52.1, se: 1.9 },
+		14: { tScore: 53.2, se: 1.8 },
+		15: { tScore: 54.1, se: 1.8 },
+		16: { tScore: 55.1, se: 1.7 },
+		17: { tScore: 55.9, se: 1.7 },
+		18: { tScore: 56.8, se: 1.7 },
+		19: { tScore: 57.7, se: 1.7 },
+		20: { tScore: 58.5, se: 1.7 },
+		21: { tScore: 59.4, se: 1.7 },
+		22: { tScore: 60.3, se: 1.7 },
+		23: { tScore: 61.2, se: 1.7 },
+		24: { tScore: 62.1, se: 1.8 },
+		25: { tScore: 63.0, se: 1.8 },
+		26: { tScore: 63.9, se: 1.8 },
+		27: { tScore: 64.9, se: 1.8 },
+		28: { tScore: 65.8, se: 1.8 },
+		29: { tScore: 66.8, se: 1.8 },
+		30: { tScore: 67.7, se: 1.8 },
+		31: { tScore: 68.7, se: 1.8 },
+		32: { tScore: 69.7, se: 1.8 },
+		33: { tScore: 70.7, se: 1.8 },
+		34: { tScore: 71.7, se: 1.8 },
+		35: { tScore: 72.8, se: 1.8 },
+		36: { tScore: 73.9, se: 1.8 },
+		37: { tScore: 75.0, se: 1.9 },
+		38: { tScore: 76.4, se: 2.0 },
+		39: { tScore: 78.2, se: 2.4 },
+		40: { tScore: 81.3, se: 3.4 },
+	};
+
+const pediatricConversionTable: {
+	[raw: number]: { tScore: number; se: number };
+} = {
+	8: { tScore: 35.2, se: 5.8 },
+	9: { tScore: 40.4, se: 4.6 },
+	10: { tScore: 43.2, se: 4.2 },
+	11: { tScore: 45.5, se: 3.9 },
+	12: { tScore: 47.4, se: 3.7 },
+	13: { tScore: 49.1, se: 3.5 },
+	14: { tScore: 50.6, se: 3.3 },
+	15: { tScore: 52.0, se: 3.2 },
+	16: { tScore: 53.3, se: 3.2 },
+	17: { tScore: 54.5, se: 3.1 },
+	18: { tScore: 55.7, se: 3.1 },
+	19: { tScore: 56.8, se: 3.0 },
+	20: { tScore: 57.9, se: 3.0 },
+	21: { tScore: 59.0, se: 3.0 },
+	22: { tScore: 60.0, se: 3.0 },
+	23: { tScore: 61.1, se: 3.0 },
+	24: { tScore: 62.1, se: 3.0 },
+	25: { tScore: 63.1, se: 3.0 },
+	26: { tScore: 64.1, se: 3.0 },
+	27: { tScore: 65.1, se: 3.0 },
+	28: { tScore: 66.1, se: 3.0 },
+	29: { tScore: 67.2, se: 2.9 },
+	30: { tScore: 68.2, se: 2.9 },
+	31: { tScore: 69.3, se: 3.0 },
+	32: { tScore: 70.3, se: 3.0 },
+	33: { tScore: 71.4, se: 3.0 },
+	34: { tScore: 72.6, se: 3.0 },
+	35: { tScore: 73.8, se: 3.1 },
+	36: { tScore: 75.1, se: 3.2 },
+	37: { tScore: 76.5, se: 3.3 },
+	38: { tScore: 78.1, se: 3.5 },
+	39: { tScore: 79.9, se: 3.6 },
+	40: { tScore: 82.4, se: 3.7 },
+};
+
+// Linking table from PROMIS T-score back to PHQ-9 score (the value stored in the DB)
+const phq9LinkingTable: { [phq9: number]: { tScore: number; se: number } } = {
+	0: { tScore: 37.4, se: 6.4 },
+	1: { tScore: 42.7, se: 5.3 },
+	2: { tScore: 45.9, se: 4.8 },
+	3: { tScore: 48.3, se: 4.7 },
+	4: { tScore: 50.5, se: 4.3 },
+	5: { tScore: 52.5, se: 4.0 },
+	6: { tScore: 54.2, se: 3.8 },
+	7: { tScore: 55.8, se: 3.7 },
+	8: { tScore: 57.2, se: 3.6 },
+	9: { tScore: 58.6, se: 3.5 },
+	10: { tScore: 59.9, se: 3.4 },
+	11: { tScore: 61.1, se: 3.3 },
+	12: { tScore: 62.3, se: 3.3 },
+	13: { tScore: 63.5, se: 3.2 },
+	14: { tScore: 64.7, se: 3.2 },
+	15: { tScore: 65.8, se: 3.2 },
+	16: { tScore: 66.9, se: 3.2 },
+	17: { tScore: 68.0, se: 3.1 },
+	18: { tScore: 69.2, se: 3.2 },
+	19: { tScore: 70.3, se: 3.2 },
+	20: { tScore: 71.5, se: 3.2 },
+	21: { tScore: 72.7, se: 3.3 },
+	22: { tScore: 74.0, se: 3.4 },
+	23: { tScore: 75.3, se: 3.5 },
+	24: { tScore: 76.7, se: 3.6 },
+	25: { tScore: 78.3, se: 3.7 },
+	26: { tScore: 80.0, se: 3.8 },
+	27: { tScore: 82.3, se: 3.8 },
+};
+
+function convertRawToTScore(rawScore: number, isOver18: boolean): number {
+	const table = isOver18 ? adultConversionTable : pediatricConversionTable;
+	if (rawScore < 8) rawScore = 8;
+	if (rawScore > 40) rawScore = 40;
+	return table[rawScore].tScore;
+}
+
+function convertTScoreToPHQ9(tScore: number): number {
+	let closestPHQ9 = 0;
+	let minDiff = Infinity;
+	for (const [phq9Score, { tScore: linkingTScore }] of Object.entries(
+		phq9LinkingTable
+	)) {
+		const diff = Math.abs(tScore - linkingTScore);
+		if (diff < minDiff) {
+			minDiff = diff;
+			closestPHQ9 = Number(phq9Score);
+		}
+	}
+	return closestPHQ9;
+}
+
+// PROMIS Questions for Depression (each prefaced with "In the past two weeks:")
+const PROMISQuestions = [
+	"I felt worthless.",
+	"I felt helpless.",
+	"I felt depressed.",
+	"I felt hopeless.",
+	"I felt like a failure.",
+	"I felt unhappy.",
+	"I felt that I had nothing to look forward to.",
+	"I felt that nothing could cheer me up.",
 ];
 
 interface UserData {
@@ -55,14 +185,12 @@ interface TikTokData {
 			VideoList: Array<{
 				Date: string;
 				Link: string;
-				// Add other expected fields
 			}>;
 		};
 		"Like List"?: {
 			ItemFavoriteList: Array<{
 				date: string;
 				link: string;
-				// Add other expected fields
 			}>;
 		};
 	};
@@ -78,7 +206,9 @@ function SurveyPageContent() {
 	const [user, setUser] = useState<UserData | null>(null);
 	const [loading, setLoading] = useState<boolean>(true);
 	const [error, setError] = useState<string | null>(null);
-	const [phq9, setPhq9] = useState<number[]>(Array(9).fill(0));
+	const [promisResponses, setPromisResponses] = useState<number[]>(
+		Array(PROMISQuestions.length).fill(0)
+	);
 	const [videoList, setVideoList] = useState<any[] | null>(null);
 	const [likedList, setLikedList] = useState<any[] | null>(null);
 	const [requestDate, setRequestDate] = useState<CalendarDate>(
@@ -127,10 +257,10 @@ function SurveyPageContent() {
 		fetchUser();
 	}, [userKey, router]);
 
-	const handlePHQ9Change = (index: number, value: string) => {
-		const updatedPHQ9 = [...phq9];
-		updatedPHQ9[index] = parseInt(value);
-		setPhq9(updatedPHQ9);
+	const handlePROMISChange = (index: number, value: string) => {
+		const updatedResponses = [...promisResponses];
+		updatedResponses[index] = parseInt(value);
+		setPromisResponses(updatedResponses);
 	};
 
 	const handleSubmit = async (e: React.FormEvent) => {
@@ -185,7 +315,14 @@ function SurveyPageContent() {
 
 		setSubmitting(true);
 
-		const phq9Score = phq9.reduce((total, current) => total + current, 0);
+		// Compute raw PROMIS score
+		const rawScore = promisResponses.reduce(
+			(total, current) => total + current,
+			0
+		);
+		const isAdult = user?.isOver18 === true;
+		const tScore = convertRawToTScore(rawScore, isAdult);
+		const finalPHQ9 = convertTScoreToPHQ9(tScore);
 
 		try {
 			const res = await fetch("/api/surveys", {
@@ -193,7 +330,7 @@ function SurveyPageContent() {
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({
 					userKey,
-					phq9Score: phq9.reduce((a, b) => a + b, 0),
+					phq9Score: finalPHQ9,
 					age,
 					gender,
 					videoList,
@@ -226,11 +363,9 @@ function SurveyPageContent() {
 			return;
 		}
 
-		// Reset previous errors
 		setError(null);
 		setFieldErrors({});
 
-		// Verify file type
 		if (!file.name.endsWith(".json")) {
 			setError("Please upload a JSON file (.json extension)");
 			return;
@@ -253,7 +388,6 @@ function SurveyPageContent() {
 				try {
 					const parsedData: TikTokData = JSON.parse(jsonContent);
 
-					// Get only video and like lists
 					const rawVideoList =
 						parsedData.Activity?.["Video Browsing History"]
 							?.VideoList || [];
@@ -261,7 +395,6 @@ function SurveyPageContent() {
 						parsedData.Activity?.["Like List"]?.ItemFavoriteList ||
 						[];
 
-					// Filter for 2025 data only
 					const filteredVideoList = rawVideoList.filter((item) => {
 						const date = new Date(item.Date);
 						return date.getFullYear() === 2025;
@@ -272,7 +405,6 @@ function SurveyPageContent() {
 						return date.getFullYear() === 2025;
 					});
 
-					// Validate filtered data
 					if (
 						!Array.isArray(filteredVideoList) ||
 						filteredVideoList.length === 0
@@ -282,7 +414,6 @@ function SurveyPageContent() {
 						);
 					}
 
-					// Update state with filtered data
 					setVideoList(filteredVideoList);
 					setLikedList(filteredLikedList);
 					setError(null);
@@ -322,13 +453,11 @@ function SurveyPageContent() {
 
 	const handleManualInput = () => {
 		try {
-			// Parse and validate video list
 			const parsedVideoList = JSON.parse(manualVideoList);
 			if (!Array.isArray(parsedVideoList)) {
 				throw new Error("Video list must be an array");
 			}
 
-			// Parse and validate liked list (now required)
 			if (!manualLikedList.trim()) {
 				throw new Error("Liked list is required");
 			}
@@ -337,7 +466,6 @@ function SurveyPageContent() {
 				throw new Error("Liked list must be an array");
 			}
 
-			// Filter for 2025 data only
 			const filteredVideoList = parsedVideoList.filter((item) => {
 				const date = new Date(item.Date);
 				return date.getFullYear() === 2025;
@@ -387,21 +515,22 @@ function SurveyPageContent() {
 	const validateForm = (): { [key: string]: string } => {
 		const errors: { [key: string]: string } = {};
 
-		// Consent validation
 		if (!consentCompleted) {
 			errors.consent = "Please complete the consent form";
 		}
 
-		// PHQ9 validation
-		phq9.forEach((score, index) => {
-			if (score < 0 || score > 3) {
-				errors[`phq9-${index}`] = "Please select an option";
+		promisResponses.forEach((score, index) => {
+			if (score < 1 || score > 5) {
+				errors[`promis-${index}`] = "Please select an option";
 			}
 		});
 
 		if (uploadMethod === "automatic") {
-			// VideoList validation
-			if (!videoList || !Array.isArray(videoList) || videoList.length === 0) {
+			if (
+				!videoList ||
+				!Array.isArray(videoList) ||
+				videoList.length === 0
+			) {
 				errors.videoList =
 					"Please upload a valid TikTok VideoList JSON file";
 			}
@@ -426,24 +555,20 @@ function SurveyPageContent() {
 			}
 		}
 
-		// Date validation
 		if (!requestDate) {
 			errors.requestDate =
 				"Please select when you requested your TikTok data";
 		}
 
-		// Timezone validation
 		if (!timezone) {
 			errors.timezone =
 				"Please select your primary TikTok viewing timezone";
 		}
 
-		// Age validation
 		if (!age || typeof age !== "number" || age < 13 || age > 100) {
 			errors.age = "Please enter a valid age between 13 and 100";
 		}
 
-		// Gender validation
 		if (
 			!gender ||
 			!["male", "female", "other"].includes(gender.toLowerCase())
@@ -451,12 +576,10 @@ function SurveyPageContent() {
 			errors.gender = "Please select your gender";
 		}
 
-		// Terms agreement validation
 		if (!agreedTerms) {
 			errors.terms = "Please agree to the terms and conditions";
 		}
 
-		// Extra terms for minors
 		if (user?.isOver18 === false && !agreedExtra) {
 			errors.extraTerms =
 				"Please agree to the additional terms for users under 18";
@@ -492,10 +615,10 @@ function SurveyPageContent() {
 			/>
 			<Card className="w-full max-w-2xl mx-auto">
 				<CardHeader>
-					<CardTitle>PHQ-9 Survey</CardTitle>
+					<CardTitle>PROMIS Depression Survey</CardTitle>
 					<CardDescription>
 						Please answer the following questions about your mental
-						health.
+						health in the past two weeks.
 					</CardDescription>
 				</CardHeader>
 				<form onSubmit={handleSubmit}>
@@ -509,21 +632,22 @@ function SurveyPageContent() {
 							</Alert>
 						)}
 
-						{PHQ9Questions.map((question, index) => (
+						{PROMISQuestions.map((question, index) => (
 							<div key={index} className="space-y-2">
-								<Label htmlFor={`phq9-${index}`}>{`${
-									index + 1
-								}. ${question}`}</Label>
+								<Label htmlFor={`promis-${index}`}>
+									{index + 1}. In the past two weeks:{" "}
+									{question}
+								</Label>
 								<Select
 									onValueChange={(value) =>
-										handlePHQ9Change(index, value)
+										handlePROMISChange(index, value)
 									}
-									value={phq9[index].toString()}
+									value={promisResponses[index].toString()}
 								>
 									<SelectTrigger
-										id={`phq9-${index}`}
+										id={`promis-${index}`}
 										className={
-											fieldErrors[`phq9-${index}`]
+											fieldErrors[`promis-${index}`]
 												? "border-red-500"
 												: ""
 										}
@@ -531,23 +655,22 @@ function SurveyPageContent() {
 										<SelectValue placeholder="Select an option" />
 									</SelectTrigger>
 									<SelectContent>
-										<SelectItem value="0">
-											Not at all
+										<SelectItem value="5">
+											Always
 										</SelectItem>
-										<SelectItem value="1">
-											Several days
+										<SelectItem value="4">Often</SelectItem>
+										<SelectItem value="3">
+											Sometimes
 										</SelectItem>
 										<SelectItem value="2">
-											More than half the days
+											Rarely
 										</SelectItem>
-										<SelectItem value="3">
-											Nearly every day
-										</SelectItem>
+										<SelectItem value="1">Never</SelectItem>
 									</SelectContent>
 								</Select>
-								{fieldErrors[`phq9-${index}`] && (
+								{fieldErrors[`promis-${index}`] && (
 									<p className="text-red-500 text-sm">
-										{fieldErrors[`phq9-${index}`]}
+										{fieldErrors[`promis-${index}`]}
 									</p>
 								)}
 							</div>

@@ -23,8 +23,8 @@ updatedAt: "2024-12-14"
 1. **Consent Form:**
     - For participants under 18, a **parent/guardian signature** is required.
     - Participants 18 or older can sign for themselves.
-2. **PHQ-9 Assessment:**
-    - Fill out the **PHQ-9 form**, which is a quick questionnaire to assess depression risk【27†source】.
+2. **PROMIS Assessment:**
+    - Fill out the **PROMIS form**, which is a quick questionnaire to assess depression risk【27†source】.
 3. **TikTok Data Submission:**
     - Download your **TikTok data** from settings and upload it securely.
     - Ensure the data is **anonymized** before submission.
@@ -35,5 +35,5 @@ updatedAt: "2024-12-14"
 
 ## Step 5: Submit Your Data
 
-- Once all forms are complete, submit your **PHQ-9 scores**, **TikTok data**, and **consent form**.
+- Once all forms are complete, submit your **PROMIS scores**, **TikTok data**, and **consent form**.
 - All data will be **anonymized** for privacy.

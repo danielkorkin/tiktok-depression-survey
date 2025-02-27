@@ -25,7 +25,7 @@ This study aims to explore how **TikTok video data** and **PHQ-9 scores** can be
 
 Participants will:
 
-1. Submit their **PHQ-9 scores**.
+1. Submit their **PROMIS scores**.
 2. Provide **TikTok data** downloaded from their account settings.
 3. Complete an **informed consent form**.
 
@@ -35,7 +35,7 @@ The AI model will analyze linguistic, visual, and behavioral patterns in the Tik
 
 - All data will be **anonymized** before submission.
 - Personal identifiers will be stripped from the TikTok data.
-- PHQ-9 scores will be linked to TikTok data only as anonymized datasets.
+- PROMIS scores will be linked to TikTok data only as anonymized datasets.
 
 ## Risks and Benefits
 

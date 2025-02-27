@@ -30,9 +30,9 @@ export default function PrivacyPolicy() {
 					</h2>
 					<ul className="list-disc pl-6">
 						<li>
-							PHQ-9 Assessment Scores: Participants voluntarily
-							submit their Patient Health Questionnaire-9 (PHQ-9)
-							scores.
+							PROMIS Assessment Scores: Participants voluntarily
+							submit their Patient-Reported Outcomes Measurement
+							Information System (PROMIS) scores.
 						</li>
 						<li>
 							TikTok Data: Participants provide TikTok data
@@ -79,7 +79,7 @@ export default function PrivacyPolicy() {
 							data before it is transmitted.
 						</li>
 						<li>
-							Randomized Identifiers: PHQ-9 scores and TikTok data
+							Randomized Identifiers: PROMIS scores and TikTok data
 							are linked only through an anonymized identifier
 							that does not trace back to you.
 						</li>
@@ -130,7 +130,7 @@ export default function PrivacyPolicy() {
 							the study&apos;s conclusion.
 						</li>
 						<li>
-							Decline to answer specific questions in the PHQ-9
+							Decline to answer specific questions in the PROMIS
 							assessment.
 						</li>
 					</ul>
