@@ -16,7 +16,7 @@ Before your data is transmitted to our secure storage, we remove all personalize
 
 ### Separate Linking of Your Data
 
-Your TikTok data is exclusively connected to your depression risk survey (PHQ-9) using a randomized and anonymized identifier. This ID is not linked to any of your personal information, ensuring that your survey responses and video history remain separate and untraceable to you.
+Your TikTok data is exclusively connected to your depression risk survey (PROMIS) using a randomized and anonymized identifier. This ID is not linked to any of your personal information, ensuring that your survey responses and video history remain separate and untraceable to you.
 
 ### Secure Data Storage
 

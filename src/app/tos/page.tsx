@@ -12,7 +12,7 @@ export default function TermsOfService() {
 				<div className="prose dark:prose-invert">
 					<p className="text-gray-700 dark:text-gray-300">
 						Welcome to our research project submission site,
-						designed to collect TikTok data and PHQ-9 survey
+						designed to collect TikTok data and PROMIS survey
 						responses for AI analysis in predicting depression risk.
 						By accessing or using our website, you agree to comply
 						with these Terms of Service.
@@ -42,7 +42,7 @@ export default function TermsOfService() {
 						<li>
 							Data is collected for the purpose of training AI to
 							predict depression risk based on TikTok data and
-							PHQ-9 scores.
+							PROMIS scores.
 						</li>
 						<li>
 							Participation is voluntary, and you may withdraw at
@@ -56,7 +56,7 @@ export default function TermsOfService() {
 					<ul className="list-disc pl-6 text-gray-700 dark:text-gray-300">
 						<li>
 							Submitted data must be legitimate, truthful, and
-							accurately reflect responses to the PHQ-9 survey.
+							accurately reflect responses to the PROMIS survey.
 						</li>
 						<li>
 							TikTok data must be downloaded directly from your
@@ -81,7 +81,7 @@ export default function TermsOfService() {
 							uploading.
 						</li>
 						<li>
-							PHQ-9 scores and video data are linked only through
+							PROMIS scores and video data are linked only through
 							anonymized datasets, making it impossible to trace
 							data back to participants.
 						</li>

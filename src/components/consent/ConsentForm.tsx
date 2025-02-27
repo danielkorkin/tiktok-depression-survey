@@ -98,7 +98,7 @@ const FormContent = ({ isMinor = false }: { isMinor: boolean }) => (
 			</h4>
 			<p className="dark:text-gray-300">
 				The purpose of this project is to explore how TikTok video data
-				and PHQ-9 scores can be used to train an AI.
+				and PROMIS scores can be used to train an AI.
 			</p>
 		</div>
 
@@ -107,7 +107,7 @@ const FormContent = ({ isMinor = false }: { isMinor: boolean }) => (
 				If you participate, you will be asked to:
 			</h4>
 			<p className="dark:text-gray-300">
-				Submit your PHQ-9 score, TikTok data downloaded from your
+				Submit your PROMIS score, TikTok data downloaded from your
 				settings, and a signed Informed Consent form.
 			</p>
 		</div>
@@ -119,7 +119,7 @@ const FormContent = ({ isMinor = false }: { isMinor: boolean }) => (
 			<p className="dark:text-gray-300">
 				Completing the online form will take minimal time, but
 				downloading TikTok data may take additional time depending on
-				TikTok&apos;s response, and filling out the PHQ-9 form should
+				TikTok&apos;s response, and filling out the PROMIS form should
 				take a few minutes.
 			</p>
 		</div>
@@ -149,10 +149,10 @@ const FormContent = ({ isMinor = false }: { isMinor: boolean }) => (
 				How confidentiality will be maintained:
 			</h4>
 			<p className="dark:text-gray-300">
-				All personal information and PHQ-9 scores are submitted
+				All personal information and PROMIS scores are submitted
 				separately. TikTok data is anonymized, with sensitive
 				information stripped before submission. TikTok video data and
-				PHQ-9 scores are linked only as anonymized datasets, making it
+				PROMIS scores are linked only as anonymized datasets, making it
 				impossible to identify participants. Additionally, the
 				project&apos;s code is open-source for transparency.
 			</p>
@@ -216,14 +216,14 @@ const ConsentContent = ({
 			<Text style={styles.heading}>Purpose of the project:</Text>
 			<Text style={styles.text}>
 				The purpose of this project is to explore how TikTok video data
-				and PHQ-9 scores can be used to train an AI.
+				and PROMIS scores can be used to train an AI.
 			</Text>
 
 			<Text style={styles.heading}>
 				If you participate, you will be asked to:
 			</Text>
 			<Text style={styles.text}>
-				Submit your PHQ-9 score, TikTok data downloaded from your
+				Submit your PROMIS score, TikTok data downloaded from your
 				settings, and a signed Informed Consent form.
 			</Text>
 
@@ -231,7 +231,7 @@ const ConsentContent = ({
 			<Text style={styles.text}>
 				Completing the online form will take minimal time, but
 				downloading TikTok data may take additional time depending on
-				TikTok&apos;s response, and filling out the PHQ-9 form should
+				TikTok&apos;s response, and filling out the PROMIS form should
 				take a few minutes.
 			</Text>
 
@@ -253,10 +253,10 @@ const ConsentContent = ({
 				How confidentiality will be maintained:
 			</Text>
 			<Text style={styles.text}>
-				All personal information and PHQ-9 scores are submitted
+				All personal information and PROMIS scores are submitted
 				separately. TikTok data is anonymized, with sensitive
 				information stripped before submission. TikTok video data and
-				PHQ-9 scores are linked only as anonymized datasets, making it
+				PROMIS scores are linked only as anonymized datasets, making it
 				impossible to identify participants. Additionally, the
 				project&apos;s code is open-source for transparency.
 			</Text>
@@ -415,7 +415,7 @@ export function ConsentForm({ isMinor, onComplete }: ConsentFormProps) {
 					<CardTitle>Informed Consent Form</CardTitle>
 					<p className="text-sm text-muted-foreground mt-2">
 						Note: This consent form is stored separately and not
-						linked to your TikTok data or PHQ-9 responses.
+						linked to your TikTok data or PROMIS responses.
 					</p>
 				</>
 			</CardHeader>
