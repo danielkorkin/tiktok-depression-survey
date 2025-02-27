@@ -180,7 +180,7 @@ interface UserData {
 }
 
 interface TikTokData {
-	Activity: {
+	Activity?: {
 		"Video Browsing History"?: {
 			VideoList: Array<{
 				Date: string;
@@ -386,14 +386,32 @@ function SurveyPageContent() {
 				}
 
 				try {
-					const parsedData: TikTokData = JSON.parse(jsonContent);
+					// Parse the JSON content
+					const parsedData = JSON.parse(jsonContent);
 
-					const rawVideoList =
+					// First strategy: attempt extraction using "Activity" key
+					let rawVideoList =
 						parsedData.Activity?.["Video Browsing History"]
 							?.VideoList || [];
-					const rawLikedList =
+					let rawLikedList =
 						parsedData.Activity?.["Like List"]?.ItemFavoriteList ||
 						[];
+
+					// Second strategy: if lists are empty, try using "Your Activity" key
+					if (
+						!rawVideoList ||
+						rawVideoList.length === 0 ||
+						!rawLikedList ||
+						rawLikedList.length === 0
+					) {
+						rawVideoList =
+							parsedData["Your Activity"]?.[
+								"Video Browsing History"
+							]?.VideoList || [];
+						rawLikedList =
+							parsedData["Your Activity"]?.["Like List"]
+								?.ItemFavoriteList || [];
+					}
 
 					const filteredVideoList = rawVideoList.filter((item) => {
 						const date = new Date(item.Date);
